@@ -33,7 +33,7 @@ const FeaturesSection = () => {
     <section className="border-t border-border px-6 py-24">
       <div className="mx-auto max-w-5xl">
         <div className="mb-16 text-center">
-          <p className="mb-3 text-sm font-medium uppercase tracking-wider text-muted-foreground">
+          <p className="mb-3 text-sm font-medium uppercase tracking-wider text-purple">
             Core Features
           </p>
           <h2 className="mb-4 text-3xl font-semibold text-foreground sm:text-4xl">
@@ -42,12 +42,14 @@ const FeaturesSection = () => {
         </div>
         
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {features.map((feature) => (
+          {features.map((feature, index) => (
             <div
               key={feature.title}
-              className="rounded-lg border border-border bg-card p-6 transition-colors hover:border-muted-foreground/30"
+              className="group rounded-lg border border-border bg-card p-6 transition-all duration-300 hover:border-purple/50 hover:-translate-y-1 hover:glow-purple-sm"
             >
-              <feature.icon className="mb-4 h-5 w-5 text-foreground" />
+              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-purple/10 border border-purple/20 transition-all duration-300 group-hover:bg-purple/20">
+                <feature.icon className="h-5 w-5 text-purple" />
+              </div>
               <h3 className="mb-2 text-lg font-medium text-foreground">
                 {feature.title}
               </h3>

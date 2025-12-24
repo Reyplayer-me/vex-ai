@@ -46,14 +46,12 @@ const Auth = () => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     
     if (isLogin) {
-      // Simulate login success
       toast({
         title: "Welcome back!",
         description: "Redirecting to your dashboard...",
       });
       navigate("/dashboard");
     } else {
-      // Redirect to onboarding for new users
       toast({
         title: "Account created!",
         description: "Let's set up your workspace...",
@@ -65,13 +63,18 @@ const Auth = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex min-h-screen flex-col bg-background relative overflow-hidden">
+      {/* Background glow */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-purple/10 blur-3xl" />
+      </div>
+
       {/* Header */}
-      <header className="border-b border-border">
+      <header className="relative z-10 border-b border-border/50">
         <div className="container mx-auto flex h-16 items-center px-6">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-foreground">
-              <span className="text-sm font-bold text-background">V</span>
+          <Link to="/" className="flex items-center gap-2 group">
+            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-purple transition-all duration-300 group-hover:glow-purple-sm">
+              <span className="text-sm font-bold text-accent-foreground">V</span>
             </div>
             <span className="text-lg font-semibold text-foreground">Vex.ai</span>
           </Link>
@@ -79,8 +82,8 @@ const Auth = () => {
       </header>
 
       {/* Main */}
-      <main className="flex flex-1 items-center justify-center px-6 py-12">
-        <div className="w-full max-w-sm">
+      <main className="relative z-10 flex flex-1 items-center justify-center px-6 py-12">
+        <div className="w-full max-w-sm opacity-0 animate-fade-in">
           <div className="mb-8 text-center">
             <h1 className="mb-2 text-2xl font-semibold text-foreground">
               {isLogin ? "Welcome back" : "Create your account"}
@@ -103,7 +106,7 @@ const Auth = () => {
                   placeholder="you@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 transition-all duration-300 focus:border-purple focus:ring-purple"
                 />
               </div>
             </div>
@@ -118,12 +121,12 @@ const Auth = () => {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 pr-10"
+                  className="pl-10 pr-10 transition-all duration-300 focus:border-purple focus:ring-purple"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                 >
                   {showPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -136,7 +139,7 @@ const Auth = () => {
 
             <Button
               type="submit"
-              className="w-full"
+              className="w-full bg-purple hover:bg-purple/90 text-accent-foreground glow-purple-sm hover:glow-purple transition-all duration-300"
               size="lg"
               disabled={loading}
             >
@@ -155,7 +158,7 @@ const Auth = () => {
             {isLogin ? "Don't have an account? " : "Already have an account? "}
             <Link
               to={`/auth?mode=${isLogin ? "signup" : "login"}`}
-              className="font-medium text-foreground underline-offset-4 hover:underline"
+              className="font-medium text-purple underline-offset-4 hover:underline transition-colors"
             >
               {isLogin ? "Sign up" : "Sign in"}
             </Link>

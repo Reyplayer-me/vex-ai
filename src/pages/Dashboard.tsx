@@ -26,22 +26,27 @@ const actions = [
 ];
 
 const Dashboard = () => {
-  // In a real app, this would come from auth context
   const userName = "there";
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Background glow */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute right-0 top-0 h-[500px] w-[500px] rounded-full bg-purple/10 blur-3xl" />
+        <div className="absolute left-0 bottom-0 h-[400px] w-[400px] rounded-full bg-purple-glow/5 blur-3xl" />
+      </div>
+
       {/* Header */}
-      <header className="border-b border-border">
+      <header className="relative z-10 border-b border-border/50 bg-background/80 backdrop-blur-md">
         <div className="container mx-auto flex h-16 items-center justify-between px-6">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-foreground">
-              <span className="text-sm font-bold text-background">V</span>
+          <Link to="/" className="flex items-center gap-2 group">
+            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-purple transition-all duration-300 group-hover:glow-purple-sm">
+              <span className="text-sm font-bold text-accent-foreground">V</span>
             </div>
             <span className="text-lg font-semibold text-foreground">Vex.ai</span>
           </Link>
           <Link to="/">
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="sm" className="hover:text-purple transition-colors">
               <LogOut className="mr-2 h-4 w-4" />
               Sign Out
             </Button>
@@ -50,12 +55,12 @@ const Dashboard = () => {
       </header>
 
       {/* Main */}
-      <main className="container mx-auto px-6 py-12">
+      <main className="relative z-10 container mx-auto px-6 py-12">
         <div className="mx-auto max-w-3xl">
           {/* Welcome */}
-          <div className="mb-12">
+          <div className="mb-12 opacity-0 animate-fade-in">
             <h1 className="mb-2 text-3xl font-semibold text-foreground">
-              Welcome back, {userName}.
+              Welcome back, <span className="text-gradient">{userName}</span>.
             </h1>
             <p className="text-lg text-muted-foreground">
               Your workspace is ready. What would you like to work on today?
@@ -63,7 +68,10 @@ const Dashboard = () => {
           </div>
 
           {/* Focus prompt */}
-          <div className="mb-12 rounded-lg border border-border bg-card p-6">
+          <div 
+            className="mb-12 rounded-lg border border-purple/30 bg-purple/5 p-6 opacity-0 animate-fade-in"
+            style={{ animationDelay: '0.1s' }}
+          >
             <h2 className="mb-2 text-lg font-medium text-foreground">
               What should I work on today?
             </h2>
@@ -74,16 +82,17 @@ const Dashboard = () => {
 
           {/* Action cards */}
           <div className="grid gap-4 sm:grid-cols-2">
-            {actions.map((action) => (
+            {actions.map((action, index) => (
               <button
                 key={action.title}
-                className="group flex items-start gap-4 rounded-lg border border-border bg-card p-6 text-left transition-colors hover:border-muted-foreground/50"
+                className="group flex items-start gap-4 rounded-lg border border-border bg-card p-6 text-left transition-all duration-300 hover:border-purple/50 hover:-translate-y-1 hover:glow-purple-sm opacity-0 animate-fade-in"
+                style={{ animationDelay: `${(index + 2) * 0.1}s` }}
               >
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted">
-                  <action.icon className="h-5 w-5 text-foreground" />
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-purple/10 border border-purple/20 transition-all duration-300 group-hover:bg-purple/20 group-hover:scale-110">
+                  <action.icon className="h-5 w-5 text-purple" />
                 </div>
                 <div>
-                  <h3 className="mb-1 font-medium text-foreground group-hover:text-foreground">
+                  <h3 className="mb-1 font-medium text-foreground group-hover:text-purple transition-colors">
                     {action.title}
                   </h3>
                   <p className="text-sm text-muted-foreground">

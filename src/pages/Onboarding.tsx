@@ -82,7 +82,7 @@ const Onboarding = () => {
     switch (step) {
       case 1:
         return (
-          <div className="space-y-6">
+          <div className="space-y-6 opacity-0 animate-fade-in">
             <div className="space-y-2 text-center">
               <h1 className="text-2xl font-semibold text-foreground">
                 What should we call you?
@@ -99,7 +99,7 @@ const Onboarding = () => {
                 placeholder="Enter your name"
                 value={data.name}
                 onChange={(e) => setData({ ...data, name: e.target.value })}
-                className="text-center"
+                className="text-center transition-all duration-300 focus:border-purple focus:ring-purple"
                 autoFocus
               />
             </div>
@@ -108,7 +108,7 @@ const Onboarding = () => {
 
       case 2:
         return (
-          <div className="space-y-6">
+          <div className="space-y-6 opacity-0 animate-fade-in">
             <div className="space-y-2 text-center">
               <h1 className="text-2xl font-semibold text-foreground">
                 What are you trying to build?
@@ -125,6 +125,7 @@ const Onboarding = () => {
                 placeholder="e.g., A marketplace for local artisans"
                 value={data.goal}
                 onChange={(e) => setData({ ...data, goal: e.target.value })}
+                className="transition-all duration-300 focus:border-purple focus:ring-purple"
                 autoFocus
               />
             </div>
@@ -133,7 +134,7 @@ const Onboarding = () => {
 
       case 3:
         return (
-          <div className="space-y-6">
+          <div className="space-y-6 opacity-0 animate-fade-in">
             <div className="space-y-2 text-center">
               <h1 className="text-2xl font-semibold text-foreground">
                 What stage are you at?
@@ -147,10 +148,10 @@ const Onboarding = () => {
                 <button
                   key={stage.id}
                   onClick={() => setData({ ...data, stage: stage.id })}
-                  className={`flex w-full items-center justify-between rounded-lg border p-4 text-left transition-colors ${
+                  className={`flex w-full items-center justify-between rounded-lg border p-4 text-left transition-all duration-300 ${
                     data.stage === stage.id
-                      ? "border-foreground bg-accent"
-                      : "border-border hover:border-muted-foreground/50"
+                      ? "border-purple bg-purple/10 glow-purple-sm"
+                      : "border-border hover:border-purple/50"
                   }`}
                 >
                   <div>
@@ -160,7 +161,7 @@ const Onboarding = () => {
                     </div>
                   </div>
                   {data.stage === stage.id && (
-                    <Check className="h-5 w-5 text-foreground" />
+                    <Check className="h-5 w-5 text-purple" />
                   )}
                 </button>
               ))}
@@ -170,7 +171,7 @@ const Onboarding = () => {
 
       case 4:
         return (
-          <div className="space-y-6">
+          <div className="space-y-6 opacity-0 animate-fade-in">
             <div className="space-y-2 text-center">
               <h1 className="text-2xl font-semibold text-foreground">
                 What industry are you in?
@@ -184,10 +185,10 @@ const Onboarding = () => {
                 <button
                   key={industry.id}
                   onClick={() => setData({ ...data, industry: industry.id })}
-                  className={`flex items-center justify-center rounded-lg border p-4 text-sm font-medium transition-colors ${
+                  className={`flex items-center justify-center rounded-lg border p-4 text-sm font-medium transition-all duration-300 ${
                     data.industry === industry.id
-                      ? "border-foreground bg-accent text-foreground"
-                      : "border-border text-muted-foreground hover:border-muted-foreground/50 hover:text-foreground"
+                      ? "border-purple bg-purple/10 text-foreground glow-purple-sm"
+                      : "border-border text-muted-foreground hover:border-purple/50 hover:text-foreground"
                   }`}
                 >
                   {industry.label}
@@ -199,7 +200,7 @@ const Onboarding = () => {
 
       case 5:
         return (
-          <div className="space-y-6">
+          <div className="space-y-6 opacity-0 animate-fade-in">
             <div className="space-y-2 text-center">
               <h1 className="text-2xl font-semibold text-foreground">
                 What do you need most?
@@ -213,10 +214,10 @@ const Onboarding = () => {
                 <button
                   key={useCase.id}
                   onClick={() => setData({ ...data, useCase: useCase.id })}
-                  className={`flex w-full items-center justify-between rounded-lg border p-4 text-left transition-colors ${
+                  className={`flex w-full items-center justify-between rounded-lg border p-4 text-left transition-all duration-300 ${
                     data.useCase === useCase.id
-                      ? "border-foreground bg-accent"
-                      : "border-border hover:border-muted-foreground/50"
+                      ? "border-purple bg-purple/10 glow-purple-sm"
+                      : "border-border hover:border-purple/50"
                   }`}
                 >
                   <div>
@@ -226,7 +227,7 @@ const Onboarding = () => {
                     </div>
                   </div>
                   {data.useCase === useCase.id && (
-                    <Check className="h-5 w-5 text-foreground" />
+                    <Check className="h-5 w-5 text-purple" />
                   )}
                 </button>
               ))}
@@ -240,13 +241,18 @@ const Onboarding = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex min-h-screen flex-col bg-background relative overflow-hidden">
+      {/* Background glow */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-purple/10 blur-3xl" />
+      </div>
+
       {/* Header */}
-      <header className="border-b border-border">
+      <header className="relative z-10 border-b border-border/50">
         <div className="container mx-auto flex h-16 items-center justify-between px-6">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-foreground">
-              <span className="text-sm font-bold text-background">V</span>
+          <Link to="/" className="flex items-center gap-2 group">
+            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-purple transition-all duration-300 group-hover:glow-purple-sm">
+              <span className="text-sm font-bold text-accent-foreground">V</span>
             </div>
             <span className="text-lg font-semibold text-foreground">Vex.ai</span>
           </Link>
@@ -257,31 +263,35 @@ const Onboarding = () => {
       </header>
 
       {/* Progress bar */}
-      <div className="h-1 bg-muted">
+      <div className="relative z-10 h-1 bg-muted">
         <div
-          className="h-full bg-foreground transition-all duration-300"
+          className="h-full bg-gradient-to-r from-purple to-purple-glow transition-all duration-500"
           style={{ width: `${(step / totalSteps) * 100}%` }}
         />
       </div>
 
       {/* Main */}
-      <main className="flex flex-1 items-center justify-center px-6 py-12">
-        <div className="w-full max-w-md">{renderStep()}</div>
+      <main className="relative z-10 flex flex-1 items-center justify-center px-6 py-12">
+        <div className="w-full max-w-md" key={step}>{renderStep()}</div>
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-border">
+      <footer className="relative z-10 border-t border-border/50">
         <div className="container mx-auto flex h-20 items-center justify-between px-6">
           <Button
             variant="ghost"
             onClick={handleBack}
             disabled={step === 1}
-            className={step === 1 ? "invisible" : ""}
+            className={`transition-all duration-300 ${step === 1 ? "invisible" : ""}`}
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back
           </Button>
-          <Button onClick={handleNext} disabled={!canProceed()}>
+          <Button 
+            onClick={handleNext} 
+            disabled={!canProceed()}
+            className="bg-purple hover:bg-purple/90 text-accent-foreground transition-all duration-300 disabled:opacity-50"
+          >
             {step === totalSteps ? "Finish" : "Continue"}
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
