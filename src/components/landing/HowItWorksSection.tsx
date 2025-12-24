@@ -31,7 +31,7 @@ const HowItWorksSection = () => {
     <section className="border-t border-border bg-card/50 px-6 py-24">
       <div className="mx-auto max-w-5xl">
         <div className="mb-16 text-center">
-          <p className="mb-3 text-sm font-medium uppercase tracking-wider text-muted-foreground">
+          <p className="mb-3 text-sm font-medium uppercase tracking-wider text-purple">
             How it works
           </p>
           <h2 className="text-3xl font-semibold text-foreground sm:text-4xl">
@@ -40,16 +40,20 @@ const HowItWorksSection = () => {
         </div>
         
         <div className="relative">
-          <div className="absolute left-[23px] top-0 hidden h-full w-px bg-border sm:block" />
+          {/* Gradient line */}
+          <div className="absolute left-[23px] top-0 hidden h-full w-px bg-gradient-to-b from-purple via-purple/50 to-transparent sm:block" />
           
           <div className="space-y-8">
             {steps.map((step, index) => (
-              <div key={step.number} className="relative flex gap-6">
-                <div className="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-border bg-background text-sm font-medium text-foreground">
+              <div 
+                key={step.number} 
+                className="group relative flex gap-6"
+              >
+                <div className="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-purple/30 bg-background text-sm font-medium text-purple transition-all duration-300 group-hover:border-purple group-hover:bg-purple/10 group-hover:glow-purple-sm">
                   {step.number}
                 </div>
                 <div className="pt-2">
-                  <h3 className="mb-1 text-lg font-medium text-foreground">
+                  <h3 className="mb-1 text-lg font-medium text-foreground transition-colors duration-300 group-hover:text-purple">
                     {step.title}
                   </h3>
                   <p className="text-muted-foreground">{step.description}</p>
