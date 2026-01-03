@@ -123,6 +123,10 @@ export default {
 				'ui-sans-serif',
 				'system-ui',
 				'sans-serif'
+			],
+			orbitron: [
+				'Orbitron',
+				'sans-serif'
 			]
 		}
   	}

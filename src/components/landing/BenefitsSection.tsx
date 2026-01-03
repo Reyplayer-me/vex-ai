@@ -1,4 +1,5 @@
 import { Zap, Users, Clock, DollarSign, BarChart3, TrendingUp } from "lucide-react";
+import AnimatedSection from "./AnimatedSection";
 
 const benefits = [
   {
@@ -38,7 +39,7 @@ const BenefitsSection = () => {
     <section id="benefits" className="relative px-6 py-32">
       <div className="mx-auto max-w-6xl">
         {/* Section Header */}
-        <div className="text-center mb-16">
+        <AnimatedSection className="text-center mb-16">
           <span className="inline-block rounded-full border border-border bg-card/50 px-4 py-1.5 text-sm text-muted-foreground mb-6">
             Benefits
           </span>
@@ -51,23 +52,22 @@ const BenefitsSection = () => {
             Discover how AI automation enhances efficiency, reduces costs, and drives
             business growth with smarter, faster processes.
           </p>
-        </div>
+        </AnimatedSection>
 
         {/* Benefits Grid */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {benefits.map((benefit) => (
-            <div
-              key={benefit.title}
-              className="rounded-2xl border border-border bg-card/30 p-6 transition-all duration-300 hover:border-purple/30"
-            >
-              <benefit.icon className="h-6 w-6 text-foreground mb-4" />
-              <h3 className="text-lg font-semibold text-foreground mb-2">
-                {benefit.title}
-              </h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                {benefit.description}
-              </p>
-            </div>
+          {benefits.map((benefit, index) => (
+            <AnimatedSection key={benefit.title} delay={index * 100}>
+              <div className="rounded-2xl border border-border bg-card/30 p-6 transition-all duration-500 hover:border-purple/30 hover:shadow-lg hover:shadow-purple/5 hover:-translate-y-1 h-full group">
+                <benefit.icon className="h-6 w-6 text-foreground mb-4 transition-transform duration-300 group-hover:scale-110 group-hover:text-purple" />
+                <h3 className="text-lg font-semibold text-foreground mb-2">
+                  {benefit.title}
+                </h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {benefit.description}
+                </p>
+              </div>
+            </AnimatedSection>
           ))}
         </div>
       </div>

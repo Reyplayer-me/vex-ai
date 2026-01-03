@@ -4,6 +4,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import AnimatedSection from "./AnimatedSection";
 
 const faqs = [
   {
@@ -14,7 +15,7 @@ const faqs = [
   {
     question: "Is AI automation difficult to integrate?",
     answer:
-      "Not at all. Vex.ai is designed to integrate seamlessly with your existing workflows. Our platform handles the technical complexity so you can focus on your business. Most users are up and running within minutes.",
+      "Not at all. VEX is designed to integrate seamlessly with your existing workflows. Our platform handles the technical complexity so you can focus on your business. Most users are up and running within minutes.",
   },
   {
     question: "What industries can benefit from AI automation?",
@@ -24,7 +25,7 @@ const faqs = [
   {
     question: "Do I need technical knowledge to use AI automation?",
     answer:
-      "No technical expertise is required. Vex.ai is built for founders and creators, not engineers. Our intuitive interface guides you through every step, and our AI handles all the complex work behind the scenes.",
+      "No technical expertise is required. VEX is built for founders and creators, not engineers. Our intuitive interface guides you through every step, and our AI handles all the complex work behind the scenes.",
   },
   {
     question: "What kind of support do you offer?",
@@ -38,7 +39,7 @@ const FAQSection = () => {
     <section id="faqs" className="relative px-6 py-32">
       <div className="mx-auto max-w-3xl">
         {/* Section Header */}
-        <div className="text-center mb-12">
+        <AnimatedSection className="text-center mb-12">
           <span className="inline-block rounded-full border border-border bg-card/50 px-4 py-1.5 text-sm text-muted-foreground mb-6">
             FAQs
           </span>
@@ -50,25 +51,27 @@ const FAQSection = () => {
           <p className="mx-auto max-w-xl text-lg text-muted-foreground">
             Quick answers to your AI automation questions.
           </p>
-        </div>
+        </AnimatedSection>
 
         {/* FAQ Accordion */}
-        <Accordion type="single" collapsible className="space-y-4">
-          {faqs.map((faq, index) => (
-            <AccordionItem
-              key={index}
-              value={`item-${index}`}
-              className="rounded-xl border border-border bg-card/30 px-6 data-[state=open]:border-purple/30"
-            >
-              <AccordionTrigger className="text-left text-foreground hover:no-underline py-5">
-                {faq.question}
-              </AccordionTrigger>
-              <AccordionContent className="text-muted-foreground pb-5">
-                {faq.answer}
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
+        <AnimatedSection delay={200}>
+          <Accordion type="single" collapsible className="space-y-4">
+            {faqs.map((faq, index) => (
+              <AccordionItem
+                key={index}
+                value={`item-${index}`}
+                className="rounded-xl border border-border bg-card/30 px-6 transition-all duration-300 data-[state=open]:border-purple/30 hover:border-purple/20"
+              >
+                <AccordionTrigger className="text-left text-foreground hover:no-underline py-5 transition-colors duration-300 hover:text-purple">
+                  {faq.question}
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground pb-5">
+                  {faq.answer}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </AnimatedSection>
       </div>
     </section>
   );
