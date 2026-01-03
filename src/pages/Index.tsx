@@ -1,24 +1,26 @@
 import Header from "@/components/landing/Header";
 import HeroSection from "@/components/landing/HeroSection";
-import ProblemSection from "@/components/landing/ProblemSection";
-import SolutionSection from "@/components/landing/SolutionSection";
-import HowItWorksSection from "@/components/landing/HowItWorksSection";
-import FeaturesSection from "@/components/landing/FeaturesSection";
-import AudienceSection from "@/components/landing/AudienceSection";
+import ServicesSection from "@/components/landing/ServicesSection";
+import ProcessSection from "@/components/landing/ProcessSection";
+import BenefitsSection from "@/components/landing/BenefitsSection";
+import PricingSection from "@/components/landing/PricingSection";
+import FAQSection from "@/components/landing/FAQSection";
 import CTASection from "@/components/landing/CTASection";
 import Footer from "@/components/landing/Footer";
+import Starfield from "@/components/landing/Starfield";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
+      <Starfield />
       <Header />
-      <main>
+      <main className="relative z-10">
         <HeroSection />
-        <ProblemSection />
-        <SolutionSection />
-        <HowItWorksSection />
-        <FeaturesSection />
-        <AudienceSection />
+        <ServicesSection />
+        <ProcessSection />
+        <BenefitsSection />
+        <PricingSection />
+        <FAQSection />
         <CTASection />
       </main>
       <Footer />
