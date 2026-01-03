@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import vexLogo from "@/assets/vex-logo.png";
 
 const Footer = () => {
   return (
@@ -7,19 +8,15 @@ const Footer = () => {
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple/50 to-transparent" />
       
       <div className="mx-auto max-w-6xl">
-        <div className="rounded-2xl border border-border bg-card/30 p-8 md:p-12">
+        <div className="rounded-2xl border border-border bg-card/30 p-8 md:p-12 backdrop-blur-sm">
           <div className="flex flex-col gap-8">
             {/* Logo and description */}
             <div className="flex flex-col gap-4">
-              <div className="flex items-center gap-3">
-                <span className="text-xs font-medium text-purple uppercase tracking-wider">VENTURE</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-lg bg-purple/20 flex items-center justify-center">
-                  <span className="text-2xl font-bold italic text-purple">V</span>
-                </div>
-                <span className="text-3xl font-bold italic text-purple tracking-tight">VEX</span>
-              </div>
+              <img 
+                src={vexLogo} 
+                alt="VEX Logo" 
+                className="h-16 w-auto object-contain object-left"
+              />
               <p className="max-w-sm text-sm text-muted-foreground mt-2">
                 Minimal. Intentional. Relentless. VEX empowers creators
                 to launch with precision and scale without compromise.
@@ -36,13 +33,13 @@ const Footer = () => {
               </p>
               
               <nav className="flex items-center gap-6">
-                <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors underline">
+                <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors underline hover:text-purple">
                   Home
                 </Link>
-                <Link to="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors underline">
+                <Link to="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors underline hover:text-purple">
                   Privacy Policy
                 </Link>
-                <Link to="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors underline">
+                <Link to="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors underline hover:text-purple">
                   Terms of Service
                 </Link>
               </nav>
