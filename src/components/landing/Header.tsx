@@ -37,7 +37,7 @@ const Header = () => {
 
         <Link to="/auth?mode=signup">
           <Button className="bg-lime-400 hover:bg-lime-300 text-background font-medium rounded-full px-6 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-lime-400/20">
-            Join Waitlist
+            Sign Up
           </Button>
         </Link>
       </div>

@@ -50,7 +50,7 @@ const HeroSection = () => {
         >
           <Link to="/auth?mode=signup">
             <Button className="bg-purple hover:bg-purple/90 text-foreground font-medium rounded-lg px-6 py-3 h-auto transition-all duration-200 group">
-              Join Waitlist
+              Sign Up
               <ArrowUpRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </Button>
           </Link>
