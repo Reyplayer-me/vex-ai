@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import vexLogo from "@/assets/vex-logo.png";
+import vexWordmark from "@/assets/vex-wordmark.png";
 
 const Header = () => {
   const navItems = ["Services", "Process", "Benefits", "Pricing", "FAQs"];
@@ -17,9 +17,9 @@ const Header = () => {
       <div className="container mx-auto flex items-center justify-between">
         <Link to="/" className="flex items-center gap-3 group">
           <img 
-            src={vexLogo} 
-            alt="VEX Logo" 
-            className="h-10 w-auto transition-transform duration-300 group-hover:scale-105"
+            src={vexWordmark} 
+            alt="VEX" 
+            className="h-8 w-auto transition-transform duration-300 group-hover:scale-105"
           />
         </Link>
         

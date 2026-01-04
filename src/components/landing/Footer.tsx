@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import vexLogo from "@/assets/vex-logo.png";
+import vexFullLogo from "@/assets/vex-full-logo.png";
 
 const Footer = () => {
   return (
@@ -13,9 +13,9 @@ const Footer = () => {
             {/* Logo and description */}
             <div className="flex flex-col gap-4">
               <img 
-                src={vexLogo} 
-                alt="VEX Logo" 
-                className="h-16 w-auto object-contain object-left"
+                src={vexFullLogo} 
+                alt="VEX - Venture Execute Xcel" 
+                className="h-24 w-auto object-contain object-left"
               />
               <p className="max-w-sm text-sm text-muted-foreground mt-2">
                 Minimal. Intentional. Relentless. VEX empowers creators
