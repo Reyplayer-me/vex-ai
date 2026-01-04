@@ -28,7 +28,7 @@ const CTASection = () => {
               
               <Link to="/auth?mode=signup">
                 <Button className="bg-purple hover:bg-purple/90 text-foreground font-medium rounded-lg px-8 py-4 h-auto transition-all duration-300 group hover:scale-105 hover:shadow-lg hover:shadow-purple/30">
-                  Join Waitlist
+                  Sign Up
                   <ArrowUpRight className="ml-1 h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </Button>
               </Link>
