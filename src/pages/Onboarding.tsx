@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowRight, ArrowLeft, Check } from "lucide-react";
+import { ArrowRight, ArrowLeft, Check, Loader2 } from "lucide-react";
 import vexWordmark from "@/assets/vex-wordmark.png";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface OnboardingData {
   name: string;
@@ -38,6 +40,8 @@ const useCases = [
 const Onboarding = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [data, setData] = useState<OnboardingData>({
     name: "",
     goal: "",
@@ -47,6 +51,49 @@ const Onboarding = () => {
   });
 
   const totalSteps = 5;
+
+  useEffect(() => {
+    const checkOnboardingStatus = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        navigate("/auth");
+        return;
+      }
+
+      const { data: profile, error } = await supabase
+        .from("profiles")
+        .select("onboarding_completed, name, goal, stage, industry, use_case")
+        .eq("user_id", session.user.id)
+        .maybeSingle();
+
+      if (error) {
+        console.error("Error fetching profile:", error);
+        setLoading(false);
+        return;
+      }
+
+      if (profile?.onboarding_completed) {
+        navigate("/dashboard");
+        return;
+      }
+
+      // Pre-fill any existing data
+      if (profile) {
+        setData({
+          name: profile.name || "",
+          goal: profile.goal || "",
+          stage: profile.stage || "",
+          industry: profile.industry || "",
+          useCase: profile.use_case || "",
+        });
+      }
+
+      setLoading(false);
+    };
+
+    checkOnboardingStatus();
+  }, [navigate]);
 
   const canProceed = () => {
     switch (step) {
@@ -65,11 +112,44 @@ const Onboarding = () => {
     }
   };
 
+  const saveOnboarding = async () => {
+    setSaving(true);
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (!session) {
+      toast.error("You must be logged in");
+      navigate("/auth");
+      return;
+    }
+
+    const { error } = await supabase
+      .from("profiles")
+      .update({
+        name: data.name,
+        goal: data.goal,
+        stage: data.stage,
+        industry: data.industry,
+        use_case: data.useCase,
+        onboarding_completed: true,
+      })
+      .eq("user_id", session.user.id);
+
+    if (error) {
+      console.error("Error saving onboarding:", error);
+      toast.error("Failed to save your preferences");
+      setSaving(false);
+      return;
+    }
+
+    toast.success("Welcome to VEX!");
+    navigate("/dashboard");
+  };
+
   const handleNext = () => {
     if (step < totalSteps) {
       setStep(step + 1);
     } else {
-      navigate("/dashboard");
+      saveOnboarding();
     }
   };
 
@@ -78,6 +158,14 @@ const Onboarding = () => {
       setStep(step - 1);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-purple" />
+      </div>
+    );
+  }
 
   const renderStep = () => {
     switch (step) {
@@ -283,7 +371,7 @@ const Onboarding = () => {
           <Button
             variant="ghost"
             onClick={handleBack}
-            disabled={step === 1}
+            disabled={step === 1 || saving}
             className={`transition-all duration-300 ${step === 1 ? "invisible" : ""}`}
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
@@ -291,11 +379,20 @@ const Onboarding = () => {
           </Button>
           <Button 
             onClick={handleNext} 
-            disabled={!canProceed()}
+            disabled={!canProceed() || saving}
             className="bg-purple hover:bg-purple/90 text-accent-foreground transition-all duration-300 disabled:opacity-50"
           >
-            {step === totalSteps ? "Finish" : "Continue"}
-            <ArrowRight className="ml-2 h-4 w-4" />
+            {saving ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                {step === totalSteps ? "Finish" : "Continue"}
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </>
+            )}
           </Button>
         </div>
       </footer>
