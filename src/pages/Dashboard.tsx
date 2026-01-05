@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Lightbulb, Target, MessageSquare, Calendar, LogOut } from "lucide-react";
+import vexWordmark from "@/assets/vex-wordmark.png";
 
 const actions = [
   {
@@ -39,12 +40,7 @@ const Dashboard = () => {
       {/* Header */}
       <header className="relative z-10 border-b border-border/50 bg-background/80 backdrop-blur-md">
         <div className="container mx-auto flex h-16 items-center justify-between px-6">
-          <Link to="/" className="flex items-center gap-2 group">
-            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-purple transition-all duration-300 group-hover:glow-purple-sm">
-              <span className="text-sm font-bold text-accent-foreground">V</span>
-            </div>
-            <span className="text-lg font-semibold text-foreground">Vex.ai</span>
-          </Link>
+            <img src={vexWordmark} alt="Vex" className="h-6" />
           <Link to="/">
             <Button variant="ghost" size="sm" className="hover:text-purple transition-colors">
               <LogOut className="mr-2 h-4 w-4" />
