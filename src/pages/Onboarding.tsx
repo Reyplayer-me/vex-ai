@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowRight, ArrowLeft, Check } from "lucide-react";
+import vexWordmark from "@/assets/vex-wordmark.png";
 
 interface OnboardingData {
   name: string;
@@ -250,11 +251,12 @@ const Onboarding = () => {
       {/* Header */}
       <header className="relative z-10 border-b border-border/50">
         <div className="container mx-auto flex h-16 items-center justify-between px-6">
-          <Link to="/" className="flex items-center gap-2 group">
-            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-purple transition-all duration-300 group-hover:glow-purple-sm">
-              <span className="text-sm font-bold text-accent-foreground">V</span>
-            </div>
-            <span className="text-lg font-semibold text-foreground">Vex.ai</span>
+          <Link to="/" className="flex items-center gap-3 group">
+            <img 
+              src={vexWordmark} 
+              alt="VEX" 
+              className="h-8 w-auto transition-transform duration-300 group-hover:scale-105"
+            />
           </Link>
           <div className="text-sm text-muted-foreground">
             Step {step} of {totalSteps}
