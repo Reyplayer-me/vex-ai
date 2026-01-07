@@ -217,6 +217,10 @@ const Onboarding = () => {
                 className="transition-all duration-300 focus:border-purple focus:ring-purple"
                 autoFocus
               />
+              <p className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-purple" />
+                This changes how your roadmap is generated
+              </p>
             </div>
           </div>
         );
@@ -232,6 +236,10 @@ const Onboarding = () => {
                 This helps us tailor our guidance.
               </p>
             </div>
+            <p className="text-xs text-muted-foreground text-center flex items-center justify-center gap-1">
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-purple" />
+              This affects which AI advisors you get
+            </p>
             <div className="space-y-3">
               {stages.map((stage) => (
                 <button
@@ -269,6 +277,10 @@ const Onboarding = () => {
                 We'll customize insights for your space.
               </p>
             </div>
+            <p className="text-xs text-muted-foreground text-center flex items-center justify-center gap-1">
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-purple" />
+              This shapes your market analysis
+            </p>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
               {industries.map((industry) => (
                 <button
@@ -298,6 +310,10 @@ const Onboarding = () => {
                 We'll prioritize what matters to you.
               </p>
             </div>
+            <p className="text-xs text-muted-foreground text-center flex items-center justify-center gap-1">
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-purple" />
+              This determines your primary AI advisor focus
+            </p>
             <div className="space-y-3">
               {useCases.map((useCase) => (
                 <button
