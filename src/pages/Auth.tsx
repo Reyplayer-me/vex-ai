@@ -114,7 +114,7 @@ const Auth = () => {
       } else {
         const redirectUrl = `${window.location.origin}/onboarding`;
 
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email: email.trim(),
           password,
           options: {
@@ -136,6 +136,16 @@ const Auth = () => {
               variant: "destructive",
             });
           }
+          return;
+        }
+
+        // Check if user already exists (Supabase returns user with empty identities array)
+        if (data?.user?.identities?.length === 0) {
+          toast({
+            title: "Account exists",
+            description: "This email is already registered. Try logging in instead.",
+            variant: "destructive",
+          });
           return;
         }
 
