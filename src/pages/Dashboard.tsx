@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Lightbulb, Target, MessageSquare, Calendar, LogOut } from "lucide-react";
 import vexWordmark from "@/assets/vex-wordmark.png";
@@ -8,26 +8,31 @@ const actions = [
     icon: Lightbulb,
     title: "Validate an Idea",
     description: "Break down risks and assumptions",
+    href: "/validate",
   },
   {
     icon: Target,
     title: "Build a Strategy",
     description: "Define positioning and go-to-market",
+    href: "#",
   },
   {
     icon: MessageSquare,
     title: "Ask a Question",
     description: "Get structured recommendations",
+    href: "#",
   },
   {
     icon: Calendar,
     title: "View Weekly Plan",
     description: "See your tasks for this week",
+    href: "#",
   },
 ];
 
 const Dashboard = () => {
   const userName = "there";
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
@@ -81,10 +86,12 @@ const Dashboard = () => {
             {actions.map((action, index) => (
               <button
                 key={action.title}
-                className="group flex items-start gap-4 rounded-lg border border-border bg-card p-6 text-left transition-all duration-300 hover:border-purple/50 hover:-translate-y-1 hover:glow-purple-sm opacity-0 animate-fade-in"
+                onClick={() => action.href !== "#" && navigate(action.href)}
+                disabled={action.href === "#"}
+                className="group flex items-start gap-4 rounded-lg border border-border bg-card p-6 text-left transition-all duration-300 hover:border-purple/50 hover:-translate-y-1 hover:glow-purple-sm opacity-0 animate-fade-in disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:border-border"
                 style={{ animationDelay: `${(index + 2) * 0.1}s` }}
               >
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-purple/10 border border-purple/20 transition-all duration-300 group-hover:bg-purple/20 group-hover:scale-110">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-purple/10 border border-purple/20 transition-all duration-300 group-hover:bg-purple/20 group-hover:scale-110 group-disabled:group-hover:scale-100">
                   <action.icon className="h-5 w-5 text-purple" />
                 </div>
                 <div>
