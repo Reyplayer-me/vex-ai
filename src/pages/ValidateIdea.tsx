@@ -3,10 +3,12 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Loader2, Sparkles, RotateCcw } from "lucide-react";
+import { ArrowLeft, Loader2, Sparkles, RotateCcw, Map } from "lucide-react";
 import vexWordmark from "@/assets/vex-wordmark.png";
 import { useIdeaValidation } from "@/hooks/useIdeaValidation";
+import { useRoadmapGeneration } from "@/hooks/useRoadmapGeneration";
 import { ValidationResultDisplay } from "@/components/validation/ValidationResultDisplay";
+import { RoadmapDisplay } from "@/components/roadmap/RoadmapDisplay";
 
 const ValidateIdea = () => {
   const [idea, setIdea] = useState("");
@@ -15,6 +17,13 @@ const ValidateIdea = () => {
   const [goal, setGoal] = useState("");
   
   const { isValidating, streamingText, result, validateIdea, reset } = useIdeaValidation();
+  const { 
+    isGenerating, 
+    streamingText: roadmapStreamingText, 
+    roadmap, 
+    generateRoadmap, 
+    reset: resetRoadmap 
+  } = useRoadmapGeneration();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,8 +37,22 @@ const ValidateIdea = () => {
     });
   };
 
+  const handleGenerateRoadmap = async () => {
+    if (!result) return;
+    
+    await generateRoadmap({
+      idea: idea.trim(),
+      targetUser: targetUser.trim(),
+      industry: industry.trim() || "General",
+      goal: goal.trim() || "Build a successful business",
+      verdict: result.verdict,
+      verdict_reasoning: result.verdict_reasoning,
+    });
+  };
+
   const handleReset = () => {
     reset();
+    resetRoadmap();
     setIdea("");
     setTargetUser("");
     setIndustry("");
@@ -37,6 +60,7 @@ const ValidateIdea = () => {
   };
 
   const isFormValid = idea.trim() && targetUser.trim();
+  const canGenerateRoadmap = result && result.verdict !== "KILL" && !roadmap;
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
@@ -63,14 +87,17 @@ const ValidateIdea = () => {
 
       {/* Main Content */}
       <main className="relative z-10 container mx-auto px-6 py-12">
-        <div className="mx-auto max-w-3xl">
+        <div className="mx-auto max-w-4xl">
           {/* Title */}
           <div className="text-center mb-8">
             <h1 className="text-3xl md:text-4xl font-semibold text-foreground mb-2">
-              Validate Your Idea
+              {roadmap ? "Execution Roadmap" : "Validate Your Idea"}
             </h1>
             <p className="text-muted-foreground">
-              Get brutally honest analysis with structured scores and a clear verdict
+              {roadmap 
+                ? "Your personalized 3-phase plan to validate and launch"
+                : "Get brutally honest analysis with structured scores and a clear verdict"
+              }
             </p>
           </div>
 
@@ -142,7 +169,7 @@ const ValidateIdea = () => {
             </form>
           )}
 
-          {/* Streaming State */}
+          {/* Validation Streaming State */}
           {isValidating && (
             <div className="space-y-6">
               <div className="flex items-center justify-center gap-3 text-purple">
@@ -160,20 +187,65 @@ const ValidateIdea = () => {
             </div>
           )}
 
-          {/* Result Display */}
-          {result && !isValidating && (
+          {/* Roadmap Streaming State */}
+          {isGenerating && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-center gap-3 text-purple">
+                <Loader2 className="h-5 w-5 animate-spin" />
+                <span className="font-medium">Generating your roadmap...</span>
+              </div>
+              
+              {roadmapStreamingText && (
+                <div className="rounded-xl border border-border bg-card/50 p-6">
+                  <pre className="text-sm text-muted-foreground whitespace-pre-wrap font-mono overflow-auto max-h-[400px]">
+                    {roadmapStreamingText}
+                  </pre>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Roadmap Display */}
+          {roadmap && !isGenerating && (
             <div className="space-y-8">
-              <ValidationResultDisplay result={result} />
+              <RoadmapDisplay roadmap={roadmap} />
               
               <div className="flex gap-4 justify-center">
                 <Button variant="outline" onClick={handleReset}>
                   <RotateCcw className="mr-2 h-4 w-4" />
-                  Validate Another Idea
+                  Start Over
                 </Button>
                 <Button variant="hero">
                   <Sparkles className="mr-2 h-4 w-4" />
                   Continue to Boardroom
                 </Button>
+              </div>
+            </div>
+          )}
+
+          {/* Validation Result Display (no roadmap yet) */}
+          {result && !isValidating && !roadmap && !isGenerating && (
+            <div className="space-y-8">
+              <ValidationResultDisplay result={result} />
+              
+              <div className="flex gap-4 justify-center flex-wrap">
+                <Button variant="outline" onClick={handleReset}>
+                  <RotateCcw className="mr-2 h-4 w-4" />
+                  Validate Another Idea
+                </Button>
+                
+                {canGenerateRoadmap && (
+                  <Button variant="hero" onClick={handleGenerateRoadmap}>
+                    <Map className="mr-2 h-4 w-4" />
+                    Generate Roadmap
+                  </Button>
+                )}
+                
+                {result.verdict === "KILL" && (
+                  <p className="w-full text-center text-sm text-muted-foreground mt-2">
+                    Roadmap generation is only available for PROCEED or PIVOT verdicts.
+                  </p>
+                )}
               </div>
             </div>
           )}
