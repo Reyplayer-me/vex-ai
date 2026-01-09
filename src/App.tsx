@@ -8,6 +8,7 @@ import Auth from "./pages/Auth";
 import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
 import ValidateIdea from "./pages/ValidateIdea";
+import Boardroom from "./pages/Boardroom";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ const App = () => (
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/validate" element={<ValidateIdea />} />
+            <Route path="/boardroom" element={<Boardroom />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
