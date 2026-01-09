@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Lightbulb, Target, MessageSquare, Calendar, LogOut } from "lucide-react";
+import { Lightbulb, Target, MessageSquare, Calendar, LogOut, Users } from "lucide-react";
 import vexWordmark from "@/assets/vex-wordmark.png";
 
 const actions = [
@@ -11,15 +11,15 @@ const actions = [
     href: "/validate",
   },
   {
+    icon: Users,
+    title: "AI Boardroom",
+    description: "Discuss with AI advisors",
+    href: "/boardroom",
+  },
+  {
     icon: Target,
     title: "Build a Strategy",
     description: "Define positioning and go-to-market",
-    href: "#",
-  },
-  {
-    icon: MessageSquare,
-    title: "Ask a Question",
-    description: "Get structured recommendations",
     href: "#",
   },
   {
