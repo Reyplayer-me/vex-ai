@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -7,6 +7,7 @@ import { ArrowLeft, Loader2, Sparkles, RotateCcw, Map } from "lucide-react";
 import vexWordmark from "@/assets/vex-wordmark.png";
 import { useIdeaValidation } from "@/hooks/useIdeaValidation";
 import { useRoadmapGeneration } from "@/hooks/useRoadmapGeneration";
+import { useValidationSession } from "@/hooks/useValidationSession";
 import { ValidationResultDisplay } from "@/components/validation/ValidationResultDisplay";
 import { RoadmapDisplay } from "@/components/roadmap/RoadmapDisplay";
 
@@ -15,32 +16,64 @@ const ValidateIdea = () => {
   const [targetUser, setTargetUser] = useState("");
   const [industry, setIndustry] = useState("");
   const [goal, setGoal] = useState("");
+  const [sessionLoaded, setSessionLoaded] = useState(false);
   
-  const { isValidating, streamingText, result, validateIdea, reset } = useIdeaValidation();
+  const { isValidating, streamingText, result, validateIdea, reset, setResult } = useIdeaValidation();
   const { 
     isGenerating, 
     streamingText: roadmapStreamingText, 
     roadmap, 
     generateRoadmap, 
-    reset: resetRoadmap 
+    reset: resetRoadmap,
+    setRoadmap 
   } = useRoadmapGeneration();
+  const { session, isLoading: isLoadingSession, saveSession, clearSession } = useValidationSession();
+
+  // Load previous session data
+  useEffect(() => {
+    if (!isLoadingSession && session && !sessionLoaded) {
+      setIdea(session.idea);
+      setTargetUser(session.target_user || "");
+      setIndustry(session.industry || "");
+      setGoal(session.goal || "");
+      if (session.validation_result) {
+        setResult(session.validation_result);
+      }
+      if (session.roadmap_result) {
+        setRoadmap(session.roadmap_result);
+      }
+      setSessionLoaded(true);
+    }
+  }, [isLoadingSession, session, sessionLoaded, setResult, setRoadmap]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!idea.trim() || !targetUser.trim()) return;
     
-    await validateIdea({
+    const validationResult = await validateIdea({
       idea: idea.trim(),
       targetUser: targetUser.trim(),
       industry: industry.trim() || "General",
       goal: goal.trim() || "Build a successful business",
     });
+
+    // Save session after validation
+    if (validationResult) {
+      saveSession(
+        idea.trim(),
+        targetUser.trim(),
+        industry.trim() || "General",
+        goal.trim() || "Build a successful business",
+        validationResult,
+        null
+      );
+    }
   };
 
   const handleGenerateRoadmap = async () => {
     if (!result) return;
     
-    await generateRoadmap({
+    const roadmapResult = await generateRoadmap({
       idea: idea.trim(),
       targetUser: targetUser.trim(),
       industry: industry.trim() || "General",
@@ -48,6 +81,18 @@ const ValidateIdea = () => {
       verdict: result.verdict,
       verdict_reasoning: result.verdict_reasoning,
     });
+
+    // Save session with roadmap
+    if (roadmapResult) {
+      saveSession(
+        idea.trim(),
+        targetUser.trim(),
+        industry.trim() || "General",
+        goal.trim() || "Build a successful business",
+        result,
+        roadmapResult
+      );
+    }
   };
 
   const handleReset = () => {
@@ -57,6 +102,8 @@ const ValidateIdea = () => {
     setTargetUser("");
     setIndustry("");
     setGoal("");
+    clearSession();
+    setSessionLoaded(false);
   };
 
   const isFormValid = idea.trim() && targetUser.trim();

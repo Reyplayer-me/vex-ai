@@ -56,6 +56,45 @@ export type Database = {
         }
         Relationships: []
       }
+      validation_sessions: {
+        Row: {
+          created_at: string
+          goal: string | null
+          id: string
+          idea: string
+          industry: string | null
+          roadmap_result: Json | null
+          target_user: string | null
+          updated_at: string
+          user_id: string
+          validation_result: Json | null
+        }
+        Insert: {
+          created_at?: string
+          goal?: string | null
+          id?: string
+          idea: string
+          industry?: string | null
+          roadmap_result?: Json | null
+          target_user?: string | null
+          updated_at?: string
+          user_id: string
+          validation_result?: Json | null
+        }
+        Update: {
+          created_at?: string
+          goal?: string | null
+          id?: string
+          idea?: string
+          industry?: string | null
+          roadmap_result?: Json | null
+          target_user?: string | null
+          updated_at?: string
+          user_id?: string
+          validation_result?: Json | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

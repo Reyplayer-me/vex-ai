@@ -70,6 +70,7 @@ export const useRoadmapGeneration = () => {
         try {
           const parsedRoadmap = JSON.parse(jsonMatch[0]) as RoadmapResult;
           setRoadmap(parsedRoadmap);
+          return parsedRoadmap;
         } catch (e) {
           console.error("Failed to parse roadmap JSON:", e);
           toast.error("Failed to parse roadmap. Please try again.");
@@ -77,9 +78,11 @@ export const useRoadmapGeneration = () => {
       } else {
         toast.error("Invalid roadmap format. Please try again.");
       }
+      return null;
     } catch (error) {
       console.error("Roadmap generation error:", error);
       toast.error(error instanceof Error ? error.message : "Failed to generate roadmap");
+      return null;
     } finally {
       setIsGenerating(false);
     }
@@ -97,5 +100,6 @@ export const useRoadmapGeneration = () => {
     roadmap,
     generateRoadmap,
     reset,
+    setRoadmap,
   };
 };
