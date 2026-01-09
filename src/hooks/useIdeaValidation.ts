@@ -77,6 +77,7 @@ export const useIdeaValidation = () => {
         try {
           const parsedResult = JSON.parse(jsonMatch[0]) as ValidationResult;
           setResult(parsedResult);
+          return parsedResult;
         } catch (parseError) {
           console.error("Failed to parse validation result:", parseError);
           toast({
@@ -86,6 +87,7 @@ export const useIdeaValidation = () => {
           });
         }
       }
+      return null;
     } catch (error) {
       console.error("Validation error:", error);
       toast({
@@ -93,6 +95,7 @@ export const useIdeaValidation = () => {
         description: error instanceof Error ? error.message : "Unknown error occurred",
         variant: "destructive",
       });
+      return null;
     } finally {
       setIsValidating(false);
     }
@@ -110,5 +113,6 @@ export const useIdeaValidation = () => {
     result,
     validateIdea,
     reset,
+    setResult,
   };
 };
