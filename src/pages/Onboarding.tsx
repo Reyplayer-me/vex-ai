@@ -10,7 +10,8 @@ import { toast } from "sonner";
 
 interface OnboardingData {
   name: string;
-  goal: string;
+  idea: string;
+  targetUser: string;
   stage: string;
   industry: string;
   useCase: string;
@@ -44,13 +45,14 @@ const Onboarding = () => {
   const [saving, setSaving] = useState(false);
   const [data, setData] = useState<OnboardingData>({
     name: "",
-    goal: "",
+    idea: "",
+    targetUser: "",
     stage: "",
     industry: "",
     useCase: "",
   });
 
-  const totalSteps = 5;
+  const totalSteps = 6;
 
   useEffect(() => {
     const checkOnboardingStatus = async () => {
@@ -63,7 +65,7 @@ const Onboarding = () => {
 
       const { data: profile, error } = await supabase
         .from("profiles")
-        .select("onboarding_completed, name, goal, stage, industry, use_case")
+        .select("onboarding_completed, name, goal, target_user, stage, industry, use_case")
         .eq("user_id", session.user.id)
         .maybeSingle();
 
@@ -82,7 +84,8 @@ const Onboarding = () => {
       if (profile) {
         setData({
           name: profile.name || "",
-          goal: profile.goal || "",
+          idea: profile.goal || "",
+          targetUser: profile.target_user || "",
           stage: profile.stage || "",
           industry: profile.industry || "",
           useCase: profile.use_case || "",
@@ -100,12 +103,14 @@ const Onboarding = () => {
       case 1:
         return data.name.trim().length > 0;
       case 2:
-        return data.goal.trim().length > 0;
+        return data.idea.trim().length > 0;
       case 3:
-        return data.stage.length > 0;
+        return data.targetUser.trim().length > 0;
       case 4:
-        return data.industry.length > 0;
+        return data.stage.length > 0;
       case 5:
+        return data.industry.length > 0;
+      case 6:
         return data.useCase.length > 0;
       default:
         return false;
@@ -126,7 +131,8 @@ const Onboarding = () => {
       .from("profiles")
       .update({
         name: data.name,
-        goal: data.goal,
+        goal: data.idea,
+        target_user: data.targetUser,
         stage: data.stage,
         industry: data.industry,
         use_case: data.useCase,
@@ -207,25 +213,55 @@ const Onboarding = () => {
               </p>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="goal">Your goal</Label>
+              <Label htmlFor="idea">Your idea</Label>
               <Input
-                id="goal"
+                id="idea"
                 type="text"
                 placeholder="e.g., A marketplace for local artisans"
-                value={data.goal}
-                onChange={(e) => setData({ ...data, goal: e.target.value })}
+                value={data.idea}
+                onChange={(e) => setData({ ...data, idea: e.target.value })}
                 className="transition-all duration-300 focus:border-purple focus:ring-purple"
                 autoFocus
               />
               <p className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
                 <span className="inline-block h-1.5 w-1.5 rounded-full bg-purple" />
-                This changes how your roadmap is generated
+                This is what your roadmap and AI advisors will focus on
               </p>
             </div>
           </div>
         );
 
       case 3:
+        return (
+          <div className="space-y-6 opacity-0 animate-fade-in">
+            <div className="space-y-2 text-center">
+              <h1 className="text-2xl font-semibold text-foreground">
+                Who is this for?
+              </h1>
+              <p className="text-muted-foreground">
+                Describe your target user or customer.
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="targetUser">Target user</Label>
+              <Input
+                id="targetUser"
+                type="text"
+                placeholder="e.g., Small business owners who sell handmade goods"
+                value={data.targetUser}
+                onChange={(e) => setData({ ...data, targetUser: e.target.value })}
+                className="transition-all duration-300 focus:border-purple focus:ring-purple"
+                autoFocus
+              />
+              <p className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-purple" />
+                Helps AI advisors give you targeted advice
+              </p>
+            </div>
+          </div>
+        );
+
+      case 4:
         return (
           <div className="space-y-6 opacity-0 animate-fade-in">
             <div className="space-y-2 text-center">
@@ -266,7 +302,7 @@ const Onboarding = () => {
           </div>
         );
 
-      case 4:
+      case 5:
         return (
           <div className="space-y-6 opacity-0 animate-fade-in">
             <div className="space-y-2 text-center">
@@ -299,7 +335,7 @@ const Onboarding = () => {
           </div>
         );
 
-      case 5:
+      case 6:
         return (
           <div className="space-y-6 opacity-0 animate-fade-in">
             <div className="space-y-2 text-center">
