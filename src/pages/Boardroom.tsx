@@ -1,29 +1,53 @@
 import { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ArrowLeft, Send, Loader2, Users, Trash2 } from "lucide-react";
 import vexWordmark from "@/assets/vex-wordmark.png";
 import { useBoardroomChat, IdeaContext } from "@/hooks/useBoardroomChat";
-import { useValidationSession } from "@/hooks/useValidationSession";
+import { supabase } from "@/integrations/supabase/client";
 
 const Boardroom = () => {
+  const navigate = useNavigate();
   const [input, setInput] = useState("");
+  const [ideaContext, setIdeaContext] = useState<IdeaContext | undefined>();
+  const [loading, setLoading] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   
   const { messages, isLoading, sendMessage, clearChat } = useBoardroomChat();
-  const { session } = useValidationSession();
 
-  // Build idea context from session
-  const ideaContext: IdeaContext | undefined = session?.idea ? {
-    idea: session.idea,
-    targetUser: session.target_user || "",
-    industry: session.industry || "",
-    goal: session.goal || "",
-    verdict: session.validation_result?.verdict,
-  } : undefined;
+  // Load user profile for idea context
+  useEffect(() => {
+    const loadProfile = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        navigate("/auth");
+        return;
+      }
+
+      const { data } = await supabase
+        .from("profiles")
+        .select("goal, target_user, industry, stage")
+        .eq("user_id", session.user.id)
+        .maybeSingle();
+
+      if (data?.goal) {
+        setIdeaContext({
+          idea: data.goal,
+          targetUser: data.target_user || "",
+          industry: data.industry || "",
+          goal: data.goal,
+        });
+      }
+
+      setLoading(false);
+    };
+
+    loadProfile();
+  }, [navigate]);
 
   // Auto-scroll to bottom
   useEffect(() => {

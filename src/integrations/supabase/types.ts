@@ -24,6 +24,7 @@ export type Database = {
           name: string | null
           onboarding_completed: boolean
           stage: string | null
+          target_user: string | null
           updated_at: string
           use_case: string | null
           user_id: string
@@ -37,6 +38,7 @@ export type Database = {
           name?: string | null
           onboarding_completed?: boolean
           stage?: string | null
+          target_user?: string | null
           updated_at?: string
           use_case?: string | null
           user_id: string
@@ -50,6 +52,7 @@ export type Database = {
           name?: string | null
           onboarding_completed?: boolean
           stage?: string | null
+          target_user?: string | null
           updated_at?: string
           use_case?: string | null
           user_id?: string
