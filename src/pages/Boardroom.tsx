@@ -16,7 +16,7 @@ const Boardroom = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   
-  const { messages, isLoading, sendMessage, clearChat } = useBoardroomChat();
+  const { messages, isLoading, isLoadingHistory, sendMessage, clearChat } = useBoardroomChat();
 
   // Load user profile for idea context
   useEffect(() => {
@@ -117,7 +117,11 @@ const Boardroom = () => {
       <div className="flex-1 overflow-hidden">
         <ScrollArea className="h-full" ref={scrollRef}>
           <div className="container mx-auto max-w-3xl px-6 py-8">
-            {messages.length === 0 ? (
+            {isLoadingHistory ? (
+              <div className="flex items-center justify-center py-20">
+                <Loader2 className="h-8 w-8 animate-spin text-purple" />
+              </div>
+            ) : messages.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-20 text-center">
                 <div className="mb-6 rounded-full bg-purple/10 p-4">
                   <Users className="h-8 w-8 text-purple" />
