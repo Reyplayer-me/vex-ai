@@ -1,7 +1,9 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 export interface ChatMessage {
+  id?: string;
   role: "user" | "assistant";
   content: string;
 }
@@ -19,14 +21,90 @@ const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/boardroom-ch
 export const useBoardroomChat = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(true);
   const { toast } = useToast();
+
+  // Load chat history on mount
+  useEffect(() => {
+    const loadHistory = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        setIsLoadingHistory(false);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("boardroom_messages")
+        .select("id, role, content")
+        .eq("user_id", session.user.id)
+        .order("created_at", { ascending: true });
+
+      if (error) {
+        console.error("Error loading chat history:", error);
+      } else if (data && data.length > 0) {
+        setMessages(data.map(msg => ({
+          id: msg.id,
+          role: msg.role as "user" | "assistant",
+          content: msg.content,
+        })));
+      }
+
+      setIsLoadingHistory(false);
+    };
+
+    loadHistory();
+  }, []);
+
+  const saveMessage = async (role: "user" | "assistant", content: string): Promise<string | null> => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return null;
+
+    const { data, error } = await supabase
+      .from("boardroom_messages")
+      .insert({
+        user_id: session.user.id,
+        role,
+        content,
+      })
+      .select("id")
+      .single();
+
+    if (error) {
+      console.error("Error saving message:", error);
+      return null;
+    }
+
+    return data?.id || null;
+  };
+
+  const updateMessage = async (id: string, content: string) => {
+    const { error } = await supabase
+      .from("boardroom_messages")
+      .update({ content })
+      .eq("id", id);
+
+    if (error) {
+      console.error("Error updating message:", error);
+    }
+  };
 
   const sendMessage = useCallback(async (userMessage: string, ideaContext?: IdeaContext) => {
     const userMsg: ChatMessage = { role: "user", content: userMessage };
     setMessages(prev => [...prev, userMsg]);
     setIsLoading(true);
 
+    // Save user message
+    const userMsgId = await saveMessage("user", userMessage);
+    if (userMsgId) {
+      setMessages(prev => {
+        const updated = [...prev];
+        updated[updated.length - 1] = { ...updated[updated.length - 1], id: userMsgId };
+        return updated;
+      });
+    }
+
     let assistantContent = "";
+    let assistantMsgId: string | null = null;
 
     try {
       const response = await fetch(CHAT_URL, {
@@ -92,6 +170,18 @@ export const useBoardroomChat = () => {
           }
         }
       }
+
+      // Save assistant message after streaming is complete
+      if (assistantContent) {
+        assistantMsgId = await saveMessage("assistant", assistantContent);
+        if (assistantMsgId) {
+          setMessages(prev => {
+            const updated = [...prev];
+            updated[updated.length - 1] = { ...updated[updated.length - 1], id: assistantMsgId! };
+            return updated;
+          });
+        }
+      }
     } catch (error) {
       console.error("Chat error:", error);
       toast({
@@ -111,13 +201,34 @@ export const useBoardroomChat = () => {
     }
   }, [messages, toast]);
 
-  const clearChat = useCallback(() => {
-    setMessages([]);
-  }, []);
+  const clearChat = useCallback(async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      setMessages([]);
+      return;
+    }
+
+    const { error } = await supabase
+      .from("boardroom_messages")
+      .delete()
+      .eq("user_id", session.user.id);
+
+    if (error) {
+      console.error("Error clearing chat:", error);
+      toast({
+        title: "Error",
+        description: "Failed to clear chat history",
+        variant: "destructive",
+      });
+    } else {
+      setMessages([]);
+    }
+  }, [toast]);
 
   return {
     messages,
     isLoading,
+    isLoadingHistory,
     sendMessage,
     clearChat,
   };
