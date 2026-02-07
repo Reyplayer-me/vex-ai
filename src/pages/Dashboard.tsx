@@ -1,7 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Map, Users, LogOut, Loader2, Lightbulb, Pencil } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Map, Users, Loader2, Lightbulb, Pencil, Settings, LogOut } from "lucide-react";
 import vexWordmark from "@/assets/vex-wordmark.png";
 import { supabase } from "@/integrations/supabase/client";
 import { EditIdeaDialog } from "@/components/dashboard/EditIdeaDialog";
@@ -82,19 +89,22 @@ const Dashboard = () => {
         <div className="absolute left-0 bottom-0 h-[400px] w-[400px] rounded-full bg-purple-glow/5 blur-3xl" />
       </div>
 
-      {/* Header */}
       <header className="relative z-10 border-b border-border/50 bg-background/80 backdrop-blur-md">
         <div className="container mx-auto flex h-16 items-center justify-between px-6">
           <img src={vexWordmark} alt="Vex" className="h-6" />
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="hover:text-purple transition-colors"
-            onClick={handleSignOut}
-          >
-            <LogOut className="mr-2 h-4 w-4" />
-            Sign Out
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm">
+                <Settings className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem onClick={handleSignOut} className="text-destructive focus:text-destructive">
+                <LogOut className="mr-2 h-4 w-4" />
+                Sign Out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </header>
 
