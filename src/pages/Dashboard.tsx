@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Map, Users, LogOut, Loader2, Lightbulb } from "lucide-react";
+import { Map, Users, LogOut, Loader2, Lightbulb, Pencil } from "lucide-react";
 import vexWordmark from "@/assets/vex-wordmark.png";
 import { supabase } from "@/integrations/supabase/client";
+import { EditIdeaDialog } from "@/components/dashboard/EditIdeaDialog";
 
 interface UserProfile {
   name: string | null;
@@ -17,32 +18,33 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+
+  const loadProfile = useCallback(async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (!session) {
+      navigate("/auth");
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("name, goal, target_user, industry, stage")
+      .eq("user_id", session.user.id)
+      .maybeSingle();
+
+    if (error) {
+      console.error("Error loading profile:", error);
+    }
+
+    setProfile(data);
+    setLoading(false);
+  }, [navigate]);
 
   useEffect(() => {
-    const loadProfile = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        navigate("/auth");
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("name, goal, target_user, industry, stage")
-        .eq("user_id", session.user.id)
-        .maybeSingle();
-
-      if (error) {
-        console.error("Error loading profile:", error);
-      }
-
-      setProfile(data);
-      setLoading(false);
-    };
-
     loadProfile();
-  }, [navigate]);
+  }, [loadProfile]);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -120,9 +122,20 @@ const Dashboard = () => {
                   <Lightbulb className="h-5 w-5 text-purple" />
                 </div>
                 <div className="flex-1">
-                  <h2 className="mb-1 text-lg font-medium text-foreground">
-                    Your Idea
-                  </h2>
+                  <div className="flex items-start justify-between gap-2">
+                    <h2 className="mb-1 text-lg font-medium text-foreground">
+                      Your Idea
+                    </h2>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 px-2 text-muted-foreground hover:text-purple"
+                      onClick={() => setEditDialogOpen(true)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                      <span className="ml-1 text-sm">Edit</span>
+                    </Button>
+                  </div>
                   <p className="text-foreground/90 mb-2">
                     {profile.goal}
                   </p>
@@ -139,6 +152,16 @@ const Dashboard = () => {
                 </div>
               </div>
             </div>
+          )}
+
+          {/* Edit Idea Dialog */}
+          {profile && (
+            <EditIdeaDialog
+              open={editDialogOpen}
+              onOpenChange={setEditDialogOpen}
+              profile={profile}
+              onSaved={loadProfile}
+            />
           )}
 
           {/* Action cards */}
