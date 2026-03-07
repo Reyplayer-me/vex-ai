@@ -143,7 +143,7 @@ const Boardroom = () => {
                       size="sm"
                       onClick={() => handleSuggestion(suggestion)}
                       disabled={isLoading}
-                      className="text-sm"
+                      className="text-sm text-foreground hover:text-foreground"
                     >
                       {suggestion}
                     </Button>
@@ -160,12 +160,12 @@ const Boardroom = () => {
                     <div
                       className={`max-w-[85%] rounded-2xl px-4 py-3 ${
                         message.role === "user"
-                          ? "bg-purple text-white"
-                          : "bg-card border border-border"
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted border border-border"
                       }`}
                     >
                       <div className={`text-sm whitespace-pre-wrap ${
-                        message.role === "assistant" ? "prose prose-sm dark:prose-invert max-w-none" : ""
+                        message.role === "assistant" ? "text-foreground prose prose-sm dark:prose-invert max-w-none" : ""
                       }`}>
                         {message.content || (
                           <span className="flex items-center gap-2 text-muted-foreground">
