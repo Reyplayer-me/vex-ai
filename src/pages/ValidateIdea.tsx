@@ -12,6 +12,7 @@ import { ValidationResultDisplay } from "@/components/validation/ValidationResul
 import { RoadmapDisplay } from "@/components/roadmap/RoadmapDisplay";
 
 const ValidateIdea = () => {
+  const navigate = useNavigate();
   const [idea, setIdea] = useState("");
   const [targetUser, setTargetUser] = useState("");
   const [industry, setIndustry] = useState("");
