@@ -74,30 +74,59 @@ export const useRoadmapGeneration = () => {
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let fullText = "";
+      let lineBuffer = "";
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
 
-        const chunk = decoder.decode(value, { stream: true });
-        const lines = chunk.split("\n");
+        lineBuffer += decoder.decode(value, { stream: true });
 
-        for (const line of lines) {
-          if (line.startsWith("data: ")) {
-            const data = line.slice(6);
-            if (data === "[DONE]") continue;
+        // Process complete lines only
+        let newlineIndex: number;
+        while ((newlineIndex = lineBuffer.indexOf("\n")) !== -1) {
+          let line = lineBuffer.slice(0, newlineIndex);
+          lineBuffer = lineBuffer.slice(newlineIndex + 1);
 
-            try {
-              const parsed = JSON.parse(data);
-              const content = parsed.choices?.[0]?.delta?.content;
-              if (content) {
-                fullText += content;
-                setStreamingText(fullText);
-              }
-            } catch {
-              // Ignore parse errors for incomplete chunks
+          if (line.endsWith("\r")) line = line.slice(0, -1);
+          if (line.startsWith(":") || line.trim() === "") continue;
+          if (!line.startsWith("data: ")) continue;
+
+          const data = line.slice(6).trim();
+          if (data === "[DONE]") continue;
+
+          try {
+            const parsed = JSON.parse(data);
+            const content = parsed.choices?.[0]?.delta?.content;
+            if (content) {
+              fullText += content;
+              setStreamingText(fullText);
             }
+          } catch {
+            // Put incomplete JSON line back into buffer and wait for more data
+            lineBuffer = line + "\n" + lineBuffer;
+            break;
           }
+        }
+      }
+
+      // Flush remaining buffer
+      if (lineBuffer.trim()) {
+        for (let raw of lineBuffer.split("\n")) {
+          if (!raw) continue;
+          if (raw.endsWith("\r")) raw = raw.slice(0, -1);
+          if (raw.startsWith(":") || raw.trim() === "") continue;
+          if (!raw.startsWith("data: ")) continue;
+          const data = raw.slice(6).trim();
+          if (data === "[DONE]") continue;
+          try {
+            const parsed = JSON.parse(data);
+            const content = parsed.choices?.[0]?.delta?.content;
+            if (content) {
+              fullText += content;
+              setStreamingText(fullText);
+            }
+          } catch { /* ignore */ }
         }
       }
 
