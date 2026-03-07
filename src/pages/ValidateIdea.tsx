@@ -263,7 +263,7 @@ const ValidateIdea = () => {
                   <RotateCcw className="mr-2 h-4 w-4" />
                   Start Over
                 </Button>
-                <Button variant="hero">
+                <Button variant="hero" onClick={() => navigate("/boardroom")}>
                   <Sparkles className="mr-2 h-4 w-4" />
                   Continue to Boardroom
                 </Button>
