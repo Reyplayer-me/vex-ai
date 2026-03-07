@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,7 @@ import { ValidationResultDisplay } from "@/components/validation/ValidationResul
 import { RoadmapDisplay } from "@/components/roadmap/RoadmapDisplay";
 
 const ValidateIdea = () => {
+  const navigate = useNavigate();
   const [idea, setIdea] = useState("");
   const [targetUser, setTargetUser] = useState("");
   const [industry, setIndustry] = useState("");
@@ -262,7 +263,7 @@ const ValidateIdea = () => {
                   <RotateCcw className="mr-2 h-4 w-4" />
                   Start Over
                 </Button>
-                <Button variant="hero">
+                <Button variant="hero" onClick={() => navigate("/boardroom")}>
                   <Sparkles className="mr-2 h-4 w-4" />
                   Continue to Boardroom
                 </Button>
