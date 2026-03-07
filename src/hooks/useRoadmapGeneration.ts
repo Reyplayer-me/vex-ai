@@ -20,19 +20,36 @@ function extractJsonFromText(content: string): unknown {
   // Try direct parse
   try { return JSON.parse(content); } catch { /* continue */ }
 
-  // Try extracting from markdown code fences
+  // Try extracting from markdown code fences (greedy to get full block)
   const codeBlockMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/);
   if (codeBlockMatch) {
-    try { return JSON.parse(codeBlockMatch[1].trim()); } catch { /* continue */ }
+    const inner = codeBlockMatch[1].trim();
+    try { return JSON.parse(inner); } catch {
+      try { return repairAndParse(inner); } catch { /* continue */ }
+    }
   }
 
-  // Strip code fences and try to find JSON object
-  const cleaned = content.replace(/```json\s*/g, "").replace(/```\s*/g, "");
-  const jsonMatch = cleaned.match(/\{[\s\S]*"[^"]+"\s*:[\s\S]*\}/);
-  if (jsonMatch) {
-    try { return JSON.parse(jsonMatch[0]); } catch {
-      // Try repairing truncated JSON
-      try { return repairAndParse(jsonMatch[0]); } catch { /* continue */ }
+  // Strip all code fences
+  const cleaned = content.replace(/```(?:json)?\s*/g, "").replace(/```/g, "").trim();
+
+  // Try parsing cleaned content directly
+  try { return JSON.parse(cleaned); } catch { /* continue */ }
+
+  // Find the outermost JSON object
+  const firstBrace = cleaned.indexOf("{");
+  const lastBrace = cleaned.lastIndexOf("}");
+  if (firstBrace !== -1 && lastBrace > firstBrace) {
+    const jsonStr = cleaned.substring(firstBrace, lastBrace + 1);
+    try { return JSON.parse(jsonStr); } catch {
+      try { return repairAndParse(jsonStr); } catch { /* continue */ }
+    }
+  }
+
+  // Last resort: wrap content that starts with a key like "phases":
+  if (cleaned.startsWith('"')) {
+    const wrapped = "{" + cleaned + "}";
+    try { return JSON.parse(wrapped); } catch {
+      try { return repairAndParse(wrapped); } catch { /* continue */ }
     }
   }
 
