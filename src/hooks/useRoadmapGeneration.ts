@@ -64,8 +64,9 @@ export const useRoadmapGeneration = () => {
         }
       }
 
-      // Parse the final JSON result
-      const jsonMatch = fullText.match(/\{[\s\S]*\}/);
+      // Parse the final JSON result - strip markdown code fences first
+      const cleaned = fullText.replace(/```json\s*/g, "").replace(/```\s*/g, "");
+      const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         try {
           const parsedRoadmap = JSON.parse(jsonMatch[0]) as RoadmapResult;
