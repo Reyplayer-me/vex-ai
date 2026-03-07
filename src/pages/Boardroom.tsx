@@ -143,7 +143,7 @@ const Boardroom = () => {
                       size="sm"
                       onClick={() => handleSuggestion(suggestion)}
                       disabled={isLoading}
-                      className="text-sm"
+                      className="text-sm text-foreground hover:text-foreground"
                     >
                       {suggestion}
                     </Button>
