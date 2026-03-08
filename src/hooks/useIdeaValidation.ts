@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { IdeaInput, ValidationResult } from "@/types/validation";
 import { useToast } from "@/hooks/use-toast";
 
