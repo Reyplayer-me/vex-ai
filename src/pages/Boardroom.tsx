@@ -30,7 +30,7 @@ const Boardroom = () => {
 
       const { data } = await supabase
         .from("profiles")
-        .select("goal, target_user, industry, stage")
+        .select("goal, target_user, industry, stage, skill_level")
         .eq("user_id", session.user.id)
         .maybeSingle();
 
@@ -40,6 +40,7 @@ const Boardroom = () => {
           targetUser: data.target_user || "",
           industry: data.industry || "",
           goal: data.goal,
+          skillLevel: (data as any).skill_level || "",
         });
       }
 
