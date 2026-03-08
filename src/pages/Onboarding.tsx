@@ -12,6 +12,7 @@ interface OnboardingData {
   name: string;
   idea: string;
   targetUser: string;
+  skillLevel: string;
   stage: string;
   industry: string;
   useCase: string;
@@ -38,6 +39,11 @@ const useCases = [
   { id: "accountability", label: "Accountability", description: "Keep me on track" },
 ];
 
+const skillLevels = [
+  { id: "technical", label: "Technical", description: "I can code and build products" },
+  { id: "non-technical", label: "Non-technical", description: "I need tools and platforms to build" },
+];
+
 const Onboarding = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
@@ -47,12 +53,13 @@ const Onboarding = () => {
     name: "",
     idea: "",
     targetUser: "",
+    skillLevel: "",
     stage: "",
     industry: "",
     useCase: "",
   });
 
-  const totalSteps = 6;
+  const totalSteps = 7;
 
   useEffect(() => {
     const checkOnboardingStatus = async () => {
@@ -65,7 +72,7 @@ const Onboarding = () => {
 
       const { data: profile, error } = await supabase
         .from("profiles")
-        .select("onboarding_completed, name, goal, target_user, stage, industry, use_case")
+        .select("onboarding_completed, name, goal, target_user, stage, industry, use_case, skill_level")
         .eq("user_id", session.user.id)
         .maybeSingle();
 
@@ -80,12 +87,12 @@ const Onboarding = () => {
         return;
       }
 
-      // Pre-fill any existing data
       if (profile) {
         setData({
           name: profile.name || "",
           idea: profile.goal || "",
           targetUser: profile.target_user || "",
+          skillLevel: (profile as any).skill_level || "",
           stage: profile.stage || "",
           industry: profile.industry || "",
           useCase: profile.use_case || "",
@@ -100,20 +107,14 @@ const Onboarding = () => {
 
   const canProceed = () => {
     switch (step) {
-      case 1:
-        return data.name.trim().length > 0;
-      case 2:
-        return data.idea.trim().length > 0;
-      case 3:
-        return data.targetUser.trim().length > 0;
-      case 4:
-        return data.stage.length > 0;
-      case 5:
-        return data.industry.length > 0;
-      case 6:
-        return data.useCase.length > 0;
-      default:
-        return false;
+      case 1: return data.name.trim().length > 0;
+      case 2: return data.idea.trim().length > 0;
+      case 3: return data.targetUser.trim().length > 0;
+      case 4: return data.skillLevel.length > 0;
+      case 5: return data.stage.length > 0;
+      case 6: return data.industry.length > 0;
+      case 7: return data.useCase.length > 0;
+      default: return false;
     }
   };
 
@@ -133,11 +134,12 @@ const Onboarding = () => {
         name: data.name,
         goal: data.idea,
         target_user: data.targetUser,
+        skill_level: data.skillLevel,
         stage: data.stage,
         industry: data.industry,
         use_case: data.useCase,
         onboarding_completed: true,
-      })
+      } as any)
       .eq("user_id", session.user.id);
 
     if (error) {
@@ -160,9 +162,7 @@ const Onboarding = () => {
   };
 
   const handleBack = () => {
-    if (step > 1) {
-      setStep(step - 1);
-    }
+    if (step > 1) setStep(step - 1);
   };
 
   if (loading) {
@@ -179,24 +179,14 @@ const Onboarding = () => {
         return (
           <div className="space-y-6 opacity-0 animate-fade-in">
             <div className="space-y-2 text-center">
-              <h1 className="text-2xl font-semibold text-foreground">
-                What should we call you?
-              </h1>
-              <p className="text-muted-foreground">
-                We'll use this to personalize your experience.
-              </p>
+              <h1 className="text-2xl font-semibold text-foreground">What should we call you?</h1>
+              <p className="text-muted-foreground">We'll use this to personalize your experience.</p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="name">Your name</Label>
-              <Input
-                id="name"
-                type="text"
-                placeholder="Enter your name"
-                value={data.name}
+              <Input id="name" type="text" placeholder="Enter your name" value={data.name}
                 onChange={(e) => setData({ ...data, name: e.target.value })}
-                className="text-center transition-all duration-300 focus:border-purple focus:ring-purple"
-                autoFocus
-              />
+                className="text-center transition-all duration-300 focus:border-purple focus:ring-purple" autoFocus />
             </div>
           </div>
         );
@@ -205,24 +195,14 @@ const Onboarding = () => {
         return (
           <div className="space-y-6 opacity-0 animate-fade-in">
             <div className="space-y-2 text-center">
-              <h1 className="text-2xl font-semibold text-foreground">
-                What are you trying to build?
-              </h1>
-              <p className="text-muted-foreground">
-                Tell us about your idea or project.
-              </p>
+              <h1 className="text-2xl font-semibold text-foreground">What are you trying to build?</h1>
+              <p className="text-muted-foreground">Tell us about your idea or project.</p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="idea">Your idea</Label>
-              <Input
-                id="idea"
-                type="text"
-                placeholder="e.g., A marketplace for local artisans"
-                value={data.idea}
+              <Input id="idea" type="text" placeholder="e.g., A marketplace for local artisans" value={data.idea}
                 onChange={(e) => setData({ ...data, idea: e.target.value })}
-                className="transition-all duration-300 focus:border-purple focus:ring-purple"
-                autoFocus
-              />
+                className="transition-all duration-300 focus:border-purple focus:ring-purple" autoFocus />
               <p className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
                 <span className="inline-block h-1.5 w-1.5 rounded-full bg-purple" />
                 This is what your roadmap and AI advisors will focus on
@@ -235,24 +215,14 @@ const Onboarding = () => {
         return (
           <div className="space-y-6 opacity-0 animate-fade-in">
             <div className="space-y-2 text-center">
-              <h1 className="text-2xl font-semibold text-foreground">
-                Who is this for?
-              </h1>
-              <p className="text-muted-foreground">
-                Describe your target user or customer.
-              </p>
+              <h1 className="text-2xl font-semibold text-foreground">Who is this for?</h1>
+              <p className="text-muted-foreground">Describe your target user or customer.</p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="targetUser">Target user</Label>
-              <Input
-                id="targetUser"
-                type="text"
-                placeholder="e.g., Small business owners who sell handmade goods"
-                value={data.targetUser}
-                onChange={(e) => setData({ ...data, targetUser: e.target.value })}
-                className="transition-all duration-300 focus:border-purple focus:ring-purple"
-                autoFocus
-              />
+              <Input id="targetUser" type="text" placeholder="e.g., Small business owners who sell handmade goods"
+                value={data.targetUser} onChange={(e) => setData({ ...data, targetUser: e.target.value })}
+                className="transition-all duration-300 focus:border-purple focus:ring-purple" autoFocus />
               <p className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
                 <span className="inline-block h-1.5 w-1.5 rounded-full bg-purple" />
                 Helps AI advisors give you targeted advice
@@ -265,37 +235,24 @@ const Onboarding = () => {
         return (
           <div className="space-y-6 opacity-0 animate-fade-in">
             <div className="space-y-2 text-center">
-              <h1 className="text-2xl font-semibold text-foreground">
-                What stage are you at?
-              </h1>
-              <p className="text-muted-foreground">
-                This helps us tailor our guidance.
-              </p>
+              <h1 className="text-2xl font-semibold text-foreground">What's your skill level?</h1>
+              <p className="text-muted-foreground">This helps us tailor recommendations for you.</p>
             </div>
             <p className="text-xs text-muted-foreground text-center flex items-center justify-center gap-1">
               <span className="inline-block h-1.5 w-1.5 rounded-full bg-purple" />
-              This affects which AI advisors you get
+              Affects tech stack and build recommendations
             </p>
             <div className="space-y-3">
-              {stages.map((stage) => (
-                <button
-                  key={stage.id}
-                  onClick={() => setData({ ...data, stage: stage.id })}
+              {skillLevels.map((level) => (
+                <button key={level.id} onClick={() => setData({ ...data, skillLevel: level.id })}
                   className={`flex w-full items-center justify-between rounded-lg border p-4 text-left transition-all duration-300 ${
-                    data.stage === stage.id
-                      ? "border-purple bg-purple/10 glow-purple-sm"
-                      : "border-border hover:border-purple/50"
-                  }`}
-                >
+                    data.skillLevel === level.id ? "border-purple bg-purple/10 glow-purple-sm" : "border-border hover:border-purple/50"
+                  }`}>
                   <div>
-                    <div className="font-medium text-foreground">{stage.label}</div>
-                    <div className="text-sm text-muted-foreground">
-                      {stage.description}
-                    </div>
+                    <div className="font-medium text-foreground">{level.label}</div>
+                    <div className="text-sm text-muted-foreground">{level.description}</div>
                   </div>
-                  {data.stage === stage.id && (
-                    <Check className="h-5 w-5 text-purple" />
-                  )}
+                  {data.skillLevel === level.id && <Check className="h-5 w-5 text-purple" />}
                 </button>
               ))}
             </div>
@@ -306,29 +263,24 @@ const Onboarding = () => {
         return (
           <div className="space-y-6 opacity-0 animate-fade-in">
             <div className="space-y-2 text-center">
-              <h1 className="text-2xl font-semibold text-foreground">
-                What industry are you in?
-              </h1>
-              <p className="text-muted-foreground">
-                We'll customize insights for your space.
-              </p>
+              <h1 className="text-2xl font-semibold text-foreground">What stage are you at?</h1>
+              <p className="text-muted-foreground">This helps us tailor our guidance.</p>
             </div>
             <p className="text-xs text-muted-foreground text-center flex items-center justify-center gap-1">
               <span className="inline-block h-1.5 w-1.5 rounded-full bg-purple" />
-              This shapes your market analysis
+              This affects which AI advisors you get
             </p>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-              {industries.map((industry) => (
-                <button
-                  key={industry.id}
-                  onClick={() => setData({ ...data, industry: industry.id })}
-                  className={`flex items-center justify-center rounded-lg border p-4 text-sm font-medium transition-all duration-300 ${
-                    data.industry === industry.id
-                      ? "border-purple bg-purple/10 text-foreground glow-purple-sm"
-                      : "border-border text-muted-foreground hover:border-purple/50 hover:text-foreground"
-                  }`}
-                >
-                  {industry.label}
+            <div className="space-y-3">
+              {stages.map((stage) => (
+                <button key={stage.id} onClick={() => setData({ ...data, stage: stage.id })}
+                  className={`flex w-full items-center justify-between rounded-lg border p-4 text-left transition-all duration-300 ${
+                    data.stage === stage.id ? "border-purple bg-purple/10 glow-purple-sm" : "border-border hover:border-purple/50"
+                  }`}>
+                  <div>
+                    <div className="font-medium text-foreground">{stage.label}</div>
+                    <div className="text-sm text-muted-foreground">{stage.description}</div>
+                  </div>
+                  {data.stage === stage.id && <Check className="h-5 w-5 text-purple" />}
                 </button>
               ))}
             </div>
@@ -339,12 +291,34 @@ const Onboarding = () => {
         return (
           <div className="space-y-6 opacity-0 animate-fade-in">
             <div className="space-y-2 text-center">
-              <h1 className="text-2xl font-semibold text-foreground">
-                What do you need most?
-              </h1>
-              <p className="text-muted-foreground">
-                We'll prioritize what matters to you.
-              </p>
+              <h1 className="text-2xl font-semibold text-foreground">What industry are you in?</h1>
+              <p className="text-muted-foreground">We'll customize insights for your space.</p>
+            </div>
+            <p className="text-xs text-muted-foreground text-center flex items-center justify-center gap-1">
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-purple" />
+              This shapes your market analysis
+            </p>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {industries.map((industry) => (
+                <button key={industry.id} onClick={() => setData({ ...data, industry: industry.id })}
+                  className={`flex items-center justify-center rounded-lg border p-4 text-sm font-medium transition-all duration-300 ${
+                    data.industry === industry.id
+                      ? "border-purple bg-purple/10 text-foreground glow-purple-sm"
+                      : "border-border text-muted-foreground hover:border-purple/50 hover:text-foreground"
+                  }`}>
+                  {industry.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        );
+
+      case 7:
+        return (
+          <div className="space-y-6 opacity-0 animate-fade-in">
+            <div className="space-y-2 text-center">
+              <h1 className="text-2xl font-semibold text-foreground">What do you need most?</h1>
+              <p className="text-muted-foreground">We'll prioritize what matters to you.</p>
             </div>
             <p className="text-xs text-muted-foreground text-center flex items-center justify-center gap-1">
               <span className="inline-block h-1.5 w-1.5 rounded-full bg-purple" />
@@ -352,24 +326,15 @@ const Onboarding = () => {
             </p>
             <div className="space-y-3">
               {useCases.map((useCase) => (
-                <button
-                  key={useCase.id}
-                  onClick={() => setData({ ...data, useCase: useCase.id })}
+                <button key={useCase.id} onClick={() => setData({ ...data, useCase: useCase.id })}
                   className={`flex w-full items-center justify-between rounded-lg border p-4 text-left transition-all duration-300 ${
-                    data.useCase === useCase.id
-                      ? "border-purple bg-purple/10 glow-purple-sm"
-                      : "border-border hover:border-purple/50"
-                  }`}
-                >
+                    data.useCase === useCase.id ? "border-purple bg-purple/10 glow-purple-sm" : "border-border hover:border-purple/50"
+                  }`}>
                   <div>
                     <div className="font-medium text-foreground">{useCase.label}</div>
-                    <div className="text-sm text-muted-foreground">
-                      {useCase.description}
-                    </div>
+                    <div className="text-sm text-muted-foreground">{useCase.description}</div>
                   </div>
-                  {data.useCase === useCase.id && (
-                    <Check className="h-5 w-5 text-purple" />
-                  )}
+                  {data.useCase === useCase.id && <Check className="h-5 w-5 text-purple" />}
                 </button>
               ))}
             </div>
@@ -383,67 +348,40 @@ const Onboarding = () => {
 
   return (
     <div className="flex min-h-screen flex-col bg-background relative overflow-hidden">
-      {/* Background glow */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-purple/10 blur-3xl" />
       </div>
 
-      {/* Header */}
       <header className="relative z-10 border-b border-border/50">
         <div className="container mx-auto flex h-16 items-center justify-between px-6">
           <Link to="/" className="flex items-center gap-3 group">
-            <img 
-              src={vexWordmark} 
-              alt="VEX" 
-              className="h-8 w-auto transition-transform duration-300 group-hover:scale-105"
-            />
+            <img src={vexWordmark} alt="VEX" className="h-8 w-auto transition-transform duration-300 group-hover:scale-105" />
           </Link>
-          <div className="text-sm text-muted-foreground">
-            Step {step} of {totalSteps}
-          </div>
+          <div className="text-sm text-muted-foreground">Step {step} of {totalSteps}</div>
         </div>
       </header>
 
-      {/* Progress bar */}
       <div className="relative z-10 h-1 bg-muted">
-        <div
-          className="h-full bg-gradient-to-r from-purple to-purple-glow transition-all duration-500"
-          style={{ width: `${(step / totalSteps) * 100}%` }}
-        />
+        <div className="h-full bg-gradient-to-r from-purple to-purple-glow transition-all duration-500"
+          style={{ width: `${(step / totalSteps) * 100}%` }} />
       </div>
 
-      {/* Main */}
       <main className="relative z-10 flex flex-1 items-center justify-center px-6 py-12">
         <div className="w-full max-w-md" key={step}>{renderStep()}</div>
       </main>
 
-      {/* Footer */}
       <footer className="relative z-10 border-t border-border/50">
         <div className="container mx-auto flex h-20 items-center justify-between px-6">
-          <Button
-            variant="ghost"
-            onClick={handleBack}
-            disabled={step === 1 || saving}
-            className={`transition-all duration-300 ${step === 1 ? "invisible" : ""}`}
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
+          <Button variant="ghost" onClick={handleBack} disabled={step === 1 || saving}
+            className={`transition-all duration-300 ${step === 1 ? "invisible" : ""}`}>
+            <ArrowLeft className="mr-2 h-4 w-4" /> Back
           </Button>
-          <Button 
-            onClick={handleNext} 
-            disabled={!canProceed() || saving}
-            className="bg-purple hover:bg-purple/90 text-accent-foreground transition-all duration-300 disabled:opacity-50"
-          >
+          <Button onClick={handleNext} disabled={!canProceed() || saving}
+            className="bg-purple hover:bg-purple/90 text-accent-foreground transition-all duration-300 disabled:opacity-50">
             {saving ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Saving...
-              </>
+              <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</>
             ) : (
-              <>
-                {step === totalSteps ? "Finish" : "Continue"}
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </>
+              <>{step === totalSteps ? "Finish" : "Continue"} <ArrowRight className="ml-2 h-4 w-4" /></>
             )}
           </Button>
         </div>
