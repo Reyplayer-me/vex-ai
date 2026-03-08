@@ -11,6 +11,8 @@ import ValidateIdea from "./pages/ValidateIdea";
 import Boardroom from "./pages/Boardroom";
 import BuildPlan from "./pages/BuildPlan";
 import LaunchStrategy from "./pages/LaunchStrategy";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,6 +33,8 @@ const App = () => (
             <Route path="/boardroom" element={<Boardroom />} />
             <Route path="/build-plan" element={<BuildPlan />} />
             <Route path="/launch-strategy" element={<LaunchStrategy />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/terms" element={<TermsOfService />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
