@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { toast } from "sonner";
 import { LaunchStrategy } from "@/types/buildplan";
+import { supabase } from "@/integrations/supabase/client";
 
 export function useLaunchStrategyGeneration() {
   const [isGenerating, setIsGenerating] = useState(false);
