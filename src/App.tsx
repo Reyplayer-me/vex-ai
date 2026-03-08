@@ -33,6 +33,8 @@ const App = () => (
             <Route path="/boardroom" element={<Boardroom />} />
             <Route path="/build-plan" element={<BuildPlan />} />
             <Route path="/launch-strategy" element={<LaunchStrategy />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/terms" element={<TermsOfService />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
