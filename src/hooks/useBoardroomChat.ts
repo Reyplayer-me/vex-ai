@@ -13,6 +13,7 @@ export interface IdeaContext {
   targetUser: string;
   industry: string;
   goal: string;
+  skillLevel?: string;
   verdict?: string;
 }
 
