@@ -9,6 +9,7 @@ const plans = [
     name: "Starter",
     icon: Rocket,
     price: { monthly: "Free", annually: "Free" },
+    originalPrice: null,
     description: "For starters who just want to explore, tinker, or validate one idea",
     features: [
       "Basic workflow automation",
@@ -22,7 +23,8 @@ const plans = [
   {
     name: "Professional",
     icon: Zap,
-    price: { monthly: "$29", annually: "$24" },
+    price: { monthly: "Free", annually: "Free" },
+    originalPrice: { monthly: "$29", annually: "$24" },
     description: "Committed solo founders or small teams ready to build + grow",
     features: [
       "Advanced workflow automation",
@@ -36,7 +38,8 @@ const plans = [
   {
     name: "Enterprise",
     icon: Crown,
-    price: { monthly: "$39", annually: "$32" },
+    price: { monthly: "Free", annually: "Free" },
+    originalPrice: { monthly: "$39", annually: "$32" },
     description: "Perfect for large businesses ready to rule",
     features: [
       "Fully customizable AI automation",
