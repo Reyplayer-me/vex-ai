@@ -150,7 +150,7 @@ Provide your structured analysis. Be brutally honest.`;
   } catch (error) {
     console.error("validate-idea error:", error);
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }),
+      JSON.stringify({ error: "An internal error occurred. Please try again." }),
       {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
