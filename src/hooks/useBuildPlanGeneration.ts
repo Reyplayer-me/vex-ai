@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { toast } from "sonner";
 import { BuildPlan } from "@/types/buildplan";
+import { supabase } from "@/integrations/supabase/client";
 
 export function useBuildPlanGeneration() {
   const [isGenerating, setIsGenerating] = useState(false);
