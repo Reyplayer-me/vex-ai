@@ -12,7 +12,8 @@ const BuildPlanPage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [context, setContext] = useState<any>(null);
-  const { isGenerating, streamingText, buildPlan, generateBuildPlan, reset } = useBuildPlanGeneration();
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const { isGenerating, streamingText, buildPlan, generateBuildPlan, reset, setBuildPlan } = useBuildPlanGeneration();
 
   useEffect(() => {
     const loadContext = async () => {
@@ -24,10 +25,19 @@ const BuildPlanPage = () => {
         .eq("user_id", session.user.id).maybeSingle();
 
       const { data: sessions } = await supabase.from("validation_sessions")
-        .select("validation_result").eq("user_id", session.user.id)
+        .select("id, validation_result, build_plan_result")
+        .eq("user_id", session.user.id)
         .order("created_at", { ascending: false }).limit(1);
 
-      const verdict = (sessions?.[0]?.validation_result as any)?.verdict;
+      const latestSession = sessions?.[0];
+      const verdict = (latestSession?.validation_result as any)?.verdict;
+
+      if (latestSession?.id) setSessionId(latestSession.id);
+
+      // If we already have a saved build plan, load it instead of regenerating
+      if (latestSession?.build_plan_result) {
+        setBuildPlan(latestSession.build_plan_result as unknown as BuildPlan);
+      }
 
       if (profile?.goal) {
         setContext({
@@ -44,11 +54,18 @@ const BuildPlanPage = () => {
     loadContext();
   }, [navigate]);
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     if (!context) { toast.error("Please complete onboarding first"); return; }
-    generateBuildPlan(context);
+    const result = await generateBuildPlan(context);
+    // Save to DB
+    if (result && sessionId) {
+      await supabase.from("validation_sessions")
+        .update({ build_plan_result: result as any })
+        .eq("id", sessionId);
+    }
   };
 
+  // Only auto-generate if no saved plan exists
   useEffect(() => {
     if (context && !buildPlan && !isGenerating) handleGenerate();
   }, [context]);

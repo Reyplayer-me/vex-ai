@@ -88,11 +88,13 @@ export type Database = {
       }
       validation_sessions: {
         Row: {
+          build_plan_result: Json | null
           created_at: string
           goal: string | null
           id: string
           idea: string
           industry: string | null
+          launch_strategy_result: Json | null
           roadmap_result: Json | null
           target_user: string | null
           updated_at: string
@@ -100,11 +102,13 @@ export type Database = {
           validation_result: Json | null
         }
         Insert: {
+          build_plan_result?: Json | null
           created_at?: string
           goal?: string | null
           id?: string
           idea: string
           industry?: string | null
+          launch_strategy_result?: Json | null
           roadmap_result?: Json | null
           target_user?: string | null
           updated_at?: string
@@ -112,11 +116,13 @@ export type Database = {
           validation_result?: Json | null
         }
         Update: {
+          build_plan_result?: Json | null
           created_at?: string
           goal?: string | null
           id?: string
           idea?: string
           industry?: string | null
+          launch_strategy_result?: Json | null
           roadmap_result?: Json | null
           target_user?: string | null
           updated_at?: string
