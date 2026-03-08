@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { toast } from "sonner";
 import { RoadmapResult, RoadmapInput } from "@/types/roadmap";
+import { supabase } from "@/integrations/supabase/client";
 
 function repairAndParse(json: string): unknown {
   let braces = 0, brackets = 0;
