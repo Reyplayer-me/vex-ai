@@ -118,11 +118,18 @@ const PricingSection = () => {
                 </div>
 
                 <div className="mb-4">
+                  {plan.originalPrice && (
+                    <span className="text-lg text-muted-foreground line-through mr-2">
+                      {isAnnual ? plan.originalPrice.annually : plan.originalPrice.monthly}/mo
+                    </span>
+                  )}
                   <span className="text-4xl font-semibold text-foreground transition-all duration-300">
                     {isAnnual ? plan.price.annually : plan.price.monthly}
                   </span>
-                  {plan.price.monthly !== "Free" && (
-                    <span className="text-muted-foreground">/month</span>
+                  {plan.originalPrice && (
+                    <span className="ml-2 rounded-full bg-green-500/10 border border-green-500/20 px-2 py-0.5 text-xs text-green-400 font-medium">
+                      Early Access
+                    </span>
                   )}
                 </div>
 
