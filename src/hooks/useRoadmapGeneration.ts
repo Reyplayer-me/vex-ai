@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { toast } from "sonner";
 import { RoadmapResult, RoadmapInput } from "@/types/roadmap";
+import { supabase } from "@/integrations/supabase/client";
 
 function repairAndParse(json: string): unknown {
   let braces = 0, brackets = 0;
@@ -67,13 +68,18 @@ export const useRoadmapGeneration = () => {
     setRoadmap(null);
 
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        throw new Error("You must be logged in to generate a roadmap.");
+      }
+
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-roadmap`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            Authorization: `Bearer ${session.access_token}`,
           },
           body: JSON.stringify(input),
         }

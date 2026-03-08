@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { IdeaInput, ValidationResult } from "@/types/validation";
 import { useToast } from "@/hooks/use-toast";
 
@@ -16,11 +17,16 @@ export const useIdeaValidation = () => {
     setResult(null);
 
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        throw new Error("You must be logged in to validate an idea.");
+      }
+
       const response = await fetch(VALIDATE_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify(input),
       });
