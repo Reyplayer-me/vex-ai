@@ -8,7 +8,7 @@ const TermsOfService = () => {
       <Starfield />
       <Header />
       <main className="relative z-10 px-6 py-24">
-        <div className="mx-auto max-w-3xl prose prose-invert prose-headings:text-foreground prose-p:text-muted-foreground prose-li:text-muted-foreground prose-strong:text-foreground">
+        <div className="mx-auto max-w-3xl [&_p]:text-muted-foreground [&_li]:text-muted-foreground [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-1 [&_a]:text-purple [&_a:hover]:underline">
           <h1 className="text-4xl font-bold text-foreground mb-2">Terms of Service</h1>
           <p className="text-lg text-muted-foreground mb-1">Vex.ai</p>
           <p className="text-sm text-muted-foreground mb-8">Last Updated: March 8, 2026</p>
