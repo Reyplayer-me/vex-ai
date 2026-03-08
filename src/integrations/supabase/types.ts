@@ -47,6 +47,7 @@ export type Database = {
           industry: string | null
           name: string | null
           onboarding_completed: boolean
+          skill_level: string | null
           stage: string | null
           target_user: string | null
           updated_at: string
@@ -61,6 +62,7 @@ export type Database = {
           industry?: string | null
           name?: string | null
           onboarding_completed?: boolean
+          skill_level?: string | null
           stage?: string | null
           target_user?: string | null
           updated_at?: string
@@ -75,6 +77,7 @@ export type Database = {
           industry?: string | null
           name?: string | null
           onboarding_completed?: boolean
+          skill_level?: string | null
           stage?: string | null
           target_user?: string | null
           updated_at?: string
