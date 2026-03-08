@@ -11,6 +11,8 @@ import ValidateIdea from "./pages/ValidateIdea";
 import Boardroom from "./pages/Boardroom";
 import BuildPlan from "./pages/BuildPlan";
 import LaunchStrategy from "./pages/LaunchStrategy";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
