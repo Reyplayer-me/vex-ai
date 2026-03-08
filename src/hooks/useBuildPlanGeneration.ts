@@ -63,16 +63,31 @@ export function useBuildPlanGeneration() {
         }
       }
 
-      // Parse JSON from response
-      const jsonMatch = fullText.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        const parsed = JSON.parse(jsonMatch[0]) as BuildPlan;
-        setBuildPlan(parsed);
-        setIsGenerating(false);
-        return parsed;
-      } else {
-        throw new Error("Could not parse build plan");
+      // Strip markdown code fences if present
+      let cleaned = fullText.replace(/```json\s*/g, "").replace(/```\s*/g, "");
+      const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) throw new Error("Could not find JSON in response");
+
+      let parsed: BuildPlan;
+      try {
+        parsed = JSON.parse(jsonMatch[0]) as BuildPlan;
+      } catch {
+        // Attempt to repair truncated JSON
+        let raw = jsonMatch[0];
+        const openBraces = (raw.match(/\{/g) || []).length;
+        const closeBraces = (raw.match(/\}/g) || []).length;
+        const openBrackets = (raw.match(/\[/g) || []).length;
+        const closeBrackets = (raw.match(/\]/g) || []).length;
+        raw = raw.replace(/,\s*$/, "");
+        raw = raw.replace(/:\s*"[^"]*$/, ': ""');
+        for (let i = 0; i < openBrackets - closeBrackets; i++) raw += "]";
+        for (let i = 0; i < openBraces - closeBraces; i++) raw += "}";
+        parsed = JSON.parse(raw) as BuildPlan;
+        console.warn("Recovered truncated build plan JSON");
       }
+      setBuildPlan(parsed);
+      setIsGenerating(false);
+      return parsed;
     } catch (error) {
       console.error("Build plan error:", error);
       toast.error(error instanceof Error ? error.message : "Failed to generate build plan");
