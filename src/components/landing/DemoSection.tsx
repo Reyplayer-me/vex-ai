@@ -1,22 +1,18 @@
 import { useState } from "react";
-import { Send, Sparkles, CheckCircle, ArrowRight, Loader2 } from "lucide-react";
+import { Sparkles, CheckCircle, ArrowRight, Shield, Code, Rocket } from "lucide-react";
 import AnimatedSection from "./AnimatedSection";
 
-const demoSteps = [
-  { text: "I want to build an AI startup for students", delay: 0 },
-];
-
 const generatedRoadmap = [
-  { phase: "Week 1-2", title: "Validate the Problem", description: "Interview 20 students about their biggest pain points with learning" },
-  { phase: "Week 3-4", title: "Build MVP", description: "Create a simple AI tutor prototype using GPT API" },
-  { phase: "Week 5-6", title: "Early Users", description: "Get 50 beta testers from university Discord servers" },
-  { phase: "Week 7-8", title: "Iterate & Scale", description: "Refine based on feedback, prep for launch" },
+  { phase: "Minute 1-2", title: "Idea Validated", description: "Scored on problem clarity, market demand, execution difficulty — verdict: Proceed", icon: Shield },
+  { phase: "Minute 3-5", title: "Boardroom Complete", description: "5 AI advisors debated your idea, challenged assumptions, delivered a unified decision", icon: Sparkles },
+  { phase: "Minute 5-7", title: "Build Plan Ready", description: "Tech stack, architecture, feature priorities, and a First Weekend Plan — all personalized", icon: Code },
+  { phase: "Minute 7-10", title: "Launch Strategy Set", description: "Target persona, growth channel, launch checklist, and traction metrics to get your first 20 users", icon: Rocket },
 ];
 
 const aiFollowUps = [
-  "What specific subject or skill will your AI help students learn?",
-  "Are you targeting high school, college, or graduate students?",
-  "Will this be a B2C product or sold to institutions?",
+  "Who exactly is the target user — students, working professionals, or career changers?",
+  "What's the one thing your tool does better than ChatGPT or YouTube tutorials?",
+  "Is your goal to build a business or learn by building?",
 ];
 
 const DemoSection = () => {
@@ -38,7 +34,7 @@ const DemoSection = () => {
             What Vex Actually Does When You Join
           </h2>
           <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-            See how your idea transforms into a structured action plan in minutes.
+            See how your idea transforms into a validated plan with tech stack, roadmap, and launch strategy.
           </p>
         </AnimatedSection>
 
@@ -62,7 +58,7 @@ const DemoSection = () => {
                       <span className="text-xs font-bold text-accent-foreground">Y</span>
                     </div>
                     <div className="flex-1 rounded-lg border border-purple/30 bg-purple/5 p-3">
-                      <p className="text-foreground">"I want to build an AI startup for students"</p>
+                      <p className="text-foreground">"I want to build an AI learning platform for students"</p>
                     </div>
                   </div>
                 </div>
@@ -71,7 +67,7 @@ const DemoSection = () => {
                 <div className="space-y-3">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Sparkles className="h-4 w-4 text-purple" />
-                    AI asks smart follow-ups
+                    Boardroom challenges your assumptions
                   </div>
                   {aiFollowUps.map((question, index) => (
                     <div 
@@ -89,7 +85,7 @@ const DemoSection = () => {
               <div className="space-y-6">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
                   <CheckCircle className="h-4 w-4 text-purple" />
-                  Generated Roadmap
+                  What You Get
                 </div>
 
                 <div className="space-y-3">
@@ -99,18 +95,21 @@ const DemoSection = () => {
                       onClick={() => setActivePhase(index)}
                       className={`w-full rounded-lg border p-4 text-left transition-all duration-300 ${
                         activePhase === index
-                          ? "border-purple bg-purple/10 glow-purple-sm"
+                          ? "border-purple bg-purple/10"
                           : "border-border/50 bg-card/50 hover:border-purple/30"
                       }`}
                     >
                       <div className="flex items-center justify-between mb-2">
-                        <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-                          activePhase === index 
-                            ? "bg-purple text-accent-foreground" 
-                            : "bg-muted text-muted-foreground"
-                        }`}>
-                          {item.phase}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <item.icon className={`h-4 w-4 ${activePhase === index ? "text-purple" : "text-muted-foreground"}`} />
+                          <span className={`text-xs font-medium px-2 py-1 rounded-full ${
+                            activePhase === index 
+                              ? "bg-purple text-accent-foreground" 
+                              : "bg-muted text-muted-foreground"
+                          }`}>
+                            {item.phase}
+                          </span>
+                        </div>
                         {activePhase === index && (
                           <CheckCircle className="h-4 w-4 text-purple" />
                         )}
@@ -125,10 +124,10 @@ const DemoSection = () => {
                 <div className="rounded-lg border border-purple/30 bg-gradient-to-r from-purple/5 to-transparent p-4">
                   <div className="flex items-center gap-2 mb-2">
                     <Sparkles className="h-4 w-4 text-purple" />
-                    <span className="text-sm font-medium text-foreground">Your Next Step</span>
+                    <span className="text-sm font-medium text-foreground">Everything persisted</span>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    Start by identifying 5 potential student communities where you can conduct interviews this week.
+                    Come back anytime — your validation, roadmap, build plan, and launch strategy are saved and waiting.
                   </p>
                 </div>
               </div>
