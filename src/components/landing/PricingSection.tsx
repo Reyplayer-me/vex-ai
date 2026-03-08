@@ -9,6 +9,7 @@ const plans = [
     name: "Starter",
     icon: Rocket,
     price: { monthly: "Free", annually: "Free" },
+    originalPrice: null,
     description: "For starters who just want to explore, tinker, or validate one idea",
     features: [
       "Basic workflow automation",
@@ -22,7 +23,8 @@ const plans = [
   {
     name: "Professional",
     icon: Zap,
-    price: { monthly: "$29", annually: "$24" },
+    price: { monthly: "Free", annually: "Free" },
+    originalPrice: { monthly: "$29", annually: "$24" },
     description: "Committed solo founders or small teams ready to build + grow",
     features: [
       "Advanced workflow automation",
@@ -36,7 +38,8 @@ const plans = [
   {
     name: "Enterprise",
     icon: Crown,
-    price: { monthly: "$39", annually: "$32" },
+    price: { monthly: "Free", annually: "Free" },
+    originalPrice: { monthly: "$39", annually: "$32" },
     description: "Perfect for large businesses ready to rule",
     features: [
       "Fully customizable AI automation",
@@ -115,11 +118,18 @@ const PricingSection = () => {
                 </div>
 
                 <div className="mb-4">
+                  {plan.originalPrice && (
+                    <span className="text-lg text-muted-foreground line-through mr-2">
+                      {isAnnual ? plan.originalPrice.annually : plan.originalPrice.monthly}/mo
+                    </span>
+                  )}
                   <span className="text-4xl font-semibold text-foreground transition-all duration-300">
                     {isAnnual ? plan.price.annually : plan.price.monthly}
                   </span>
-                  {plan.price.monthly !== "Free" && (
-                    <span className="text-muted-foreground">/month</span>
+                  {plan.originalPrice && (
+                    <span className="ml-2 rounded-full bg-green-500/10 border border-green-500/20 px-2 py-0.5 text-xs text-green-400 font-medium">
+                      Early Access
+                    </span>
                   )}
                 </div>
 
