@@ -67,6 +67,18 @@ serve(async (req) => {
   try {
     const { idea, targetUser, industry, goal, verdict, verdict_reasoning } = await req.json();
 
+    // Input validation
+    const MAX_LEN = 2000;
+    const fields = { idea, targetUser, industry, goal, verdict, verdict_reasoning };
+    for (const [key, val] of Object.entries(fields)) {
+      if (typeof val !== 'string' || val.trim().length === 0 || val.length > MAX_LEN) {
+        return new Response(JSON.stringify({ error: `Invalid input: ${key}` }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY is not configured");

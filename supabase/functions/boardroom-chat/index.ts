@@ -12,6 +12,18 @@ serve(async (req) => {
 
   try {
     const { messages, ideaContext } = await req.json();
+
+    // Input validation
+    const MAX_MESSAGES = 50;
+    const MAX_MSG_LEN = 4000;
+    if (!Array.isArray(messages) || messages.length === 0 || messages.length > MAX_MESSAGES ||
+        messages.some((m: any) => typeof m.content !== 'string' || m.content.length > MAX_MSG_LEN || typeof m.role !== 'string')) {
+      return new Response(JSON.stringify({ error: "Invalid messages input" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     
     if (!LOVABLE_API_KEY) {
