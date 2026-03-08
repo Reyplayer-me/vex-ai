@@ -12,7 +12,8 @@ const LaunchStrategyPage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [context, setContext] = useState<any>(null);
-  const { isGenerating, streamingText, strategy, generateStrategy, reset } = useLaunchStrategyGeneration();
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const { isGenerating, streamingText, strategy, generateStrategy, reset, setStrategy } = useLaunchStrategyGeneration();
 
   useEffect(() => {
     const loadContext = async () => {
@@ -24,10 +25,19 @@ const LaunchStrategyPage = () => {
         .eq("user_id", session.user.id).maybeSingle();
 
       const { data: sessions } = await supabase.from("validation_sessions")
-        .select("validation_result").eq("user_id", session.user.id)
+        .select("id, validation_result, launch_strategy_result")
+        .eq("user_id", session.user.id)
         .order("created_at", { ascending: false }).limit(1);
 
-      const verdict = (sessions?.[0]?.validation_result as any)?.verdict;
+      const latestSession = sessions?.[0];
+      const verdict = (latestSession?.validation_result as any)?.verdict;
+
+      if (latestSession?.id) setSessionId(latestSession.id);
+
+      // If we already have a saved launch strategy, load it
+      if (latestSession?.launch_strategy_result) {
+        setStrategy(latestSession.launch_strategy_result as unknown as LaunchStrategy);
+      }
 
       if (profile?.goal) {
         setContext({
@@ -44,11 +54,18 @@ const LaunchStrategyPage = () => {
     loadContext();
   }, [navigate]);
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     if (!context) { toast.error("Please complete onboarding first"); return; }
-    generateStrategy(context);
+    const result = await generateStrategy(context);
+    // Save to DB
+    if (result && sessionId) {
+      await supabase.from("validation_sessions")
+        .update({ launch_strategy_result: result as any })
+        .eq("id", sessionId);
+    }
   };
 
+  // Only auto-generate if no saved strategy exists
   useEffect(() => {
     if (context && !strategy && !isGenerating) handleGenerate();
   }, [context]);
