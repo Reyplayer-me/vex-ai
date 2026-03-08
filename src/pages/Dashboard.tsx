@@ -102,7 +102,7 @@ const Dashboard = () => {
           <img src={vexWordmark} alt="Vex" className="h-6" />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="icon" className="h-9 w-9"><Settings className="h-4 w-4" /></Button>
+              <Button variant="outline" size="icon" className="h-9 w-9 text-foreground"><Settings className="h-4 w-4" /></Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
               <DropdownMenuItem onClick={handleSignOut} className="text-destructive focus:text-destructive">
