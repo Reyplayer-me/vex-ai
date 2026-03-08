@@ -1,30 +1,36 @@
-import { Clock, Sparkles, Users, Compass, CheckCircle } from "lucide-react";
+import { Clock, Sparkles, Users, Compass, Code, Rocket, CheckCircle } from "lucide-react";
 import AnimatedSection from "./AnimatedSection";
 
 const timelineSteps = [
   {
     minute: "1",
     title: "Describe your idea",
-    description: "Tell us what you're building in your own words",
+    description: "Tell us what you're building, who it's for, and what your goal is",
     icon: Sparkles,
   },
   {
     minute: "3",
-    title: "AI boardroom created",
-    description: "Your personalized team of AI advisors is assembled",
+    title: "AI Boardroom debates it",
+    description: "Five AI advisors — CEO, Execution, Risk, Psychologist, Industry Expert — challenge your idea",
     icon: Users,
   },
   {
     minute: "5",
-    title: "Roadmap generated",
-    description: "Get a clear, week-by-week action plan",
-    icon: Compass,
+    title: "Get your validation verdict",
+    description: "Scored on clarity, market demand, execution, and differentiation — Proceed, Pivot, or Kill",
+    icon: CheckCircle,
+  },
+  {
+    minute: "7",
+    title: "Roadmap & build plan generated",
+    description: "Phased roadmap, tech stack, architecture, and a First Weekend Plan tailored to your skill level",
+    icon: Code,
   },
   {
     minute: "10",
-    title: "You know exactly what to do next",
-    description: "No more guessing—just execution",
-    icon: CheckCircle,
+    title: "Launch strategy ready",
+    description: "Target persona, growth channel, launch checklist, and traction metrics — you're ready to move",
+    icon: Rocket,
   },
 ];
 
@@ -46,7 +52,7 @@ const First10MinutesSection = () => {
             Your First 10 Minutes on Vex
           </h2>
           <p className="mx-auto max-w-xl text-lg text-muted-foreground">
-            From idea to action plan in less time than it takes to make coffee.
+            From raw idea to launch-ready plan in less time than it takes to make coffee.
           </p>
         </AnimatedSection>
 
