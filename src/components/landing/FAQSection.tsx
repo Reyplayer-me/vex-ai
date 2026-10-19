@@ -4,44 +4,77 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import AnimatedSection from "./AnimatedSection";
 
 const faqs = [
   {
-    question: "Is this just ChatGPT with a different skin?",
-    answer: "It uses AI models, yes. The difference is structure: your idea is saved once, five advisors with fixed roles respond to it, and you get a scored verdict and a concrete plan instead of an open-ended chat.",
+    question: "How can AI automation help my business?",
+    answer:
+      "AI automation can streamline repetitive tasks, improve decision-making with data-driven insights, enhance customer experiences through personalized interactions, and reduce operational costs. It allows you to focus on strategic growth while AI handles the execution.",
   },
   {
-    question: "Will it tell me my idea is bad?",
-    answer: "Yes, if it is. KILL is a real verdict and one of the advisors exists only to argue against you. It's better to hear it now than after three months of building.",
+    question: "Is AI automation difficult to integrate?",
+    answer:
+      "Not at all. VEX is designed to integrate seamlessly with your existing workflows. Our platform handles the technical complexity so you can focus on your business. Most users are up and running within minutes.",
   },
   {
-    question: "Do I need to code?",
-    answer: "No. During signup you tell us whether you're technical, and the build plan adjusts. Non-technical founders get no-code options and a list of what to hand a developer.",
+    question: "What industries can benefit from AI automation?",
+    answer:
+      "Virtually every industry can benefit from AI automation — from startups and tech companies to healthcare, education, finance, e-commerce, and more. Any business that wants to work smarter and scale faster can leverage AI.",
   },
   {
-    question: "What happens to my idea?",
-    answer: "It's stored in your account so you can return to it. It's sent to our AI provider only to generate your results. We don't sell it or share it, and you can ask us to delete it any time through the contact page.",
+    question: "Do I need technical knowledge to use AI automation?",
+    answer:
+      "No technical expertise is required. VEX is built for founders and creators, not engineers. Our intuitive interface guides you through every step, and our AI handles all the complex work behind the scenes.",
   },
   {
-    question: "Why is it free?",
-    answer: "We're in early access and want people using it and telling us what's missing. Paid plans will come later. Early users will hear about it well before anything changes.",
+    question: "What kind of support do you offer?",
+    answer:
+      "We offer comprehensive support including email and chat support for all plans, priority support for Professional users, and 24/7 VIP support for Enterprise customers. Our team is always ready to help you succeed.",
   },
 ];
 
-const FAQSection = () => (
-  <section id="faqs" className="px-6 py-24">
-    <div className="mx-auto max-w-[1100px]">
-      <h2 className="mb-10 text-3xl font-semibold text-foreground md:text-4xl">Questions people ask</h2>
-      <Accordion type="single" collapsible className="max-w-3xl border-t border-border">
-        {faqs.map((faq, i) => (
-          <AccordionItem key={i} value={`item-${i}`} className="border-b border-border">
-            <AccordionTrigger className="py-5 text-left text-foreground hover:no-underline">{faq.question}</AccordionTrigger>
-            <AccordionContent className="pb-5 text-muted-foreground">{faq.answer}</AccordionContent>
-          </AccordionItem>
-        ))}
-      </Accordion>
-    </div>
-  </section>
-);
+const FAQSection = () => {
+  return (
+    <section id="faqs" className="relative px-6 py-32">
+      <div className="mx-auto max-w-3xl">
+        {/* Section Header */}
+        <AnimatedSection className="text-center mb-12">
+          <span className="inline-block rounded-full border border-border bg-card/50 px-4 py-1.5 text-sm text-muted-foreground mb-6">
+            FAQs
+          </span>
+          <h2 className="text-4xl md:text-5xl font-semibold text-foreground mb-4">
+            We've Got the Answers
+            <br />
+            You're Looking For
+          </h2>
+          <p className="mx-auto max-w-xl text-lg text-muted-foreground">
+            Quick answers to your AI automation questions.
+          </p>
+        </AnimatedSection>
+
+        {/* FAQ Accordion */}
+        <AnimatedSection delay={200}>
+          <Accordion type="single" collapsible className="space-y-4">
+            {faqs.map((faq, index) => (
+              <AccordionItem
+                key={index}
+                value={`item-${index}`}
+                className="rounded-xl border border-border bg-card/30 px-6 transition-all duration-300 data-[state=open]:border-purple/30 hover:border-purple/20"
+              >
+                <AccordionTrigger className="text-left text-foreground hover:no-underline py-5 transition-colors duration-300 hover:text-purple">
+                  {faq.question}
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground pb-5">
+                  {faq.answer}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </AnimatedSection>
+      </div>
+    </section>
+  );
+};
 
 export default FAQSection;

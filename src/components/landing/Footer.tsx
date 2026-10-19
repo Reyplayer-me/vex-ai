@@ -1,27 +1,54 @@
 import { Link } from "react-router-dom";
-import vexWordmark from "@/assets/vex-wordmark.png";
+import vexFullLogo from "@/assets/vex-full-logo.png";
 
-const links = [
-  { to: "/about", label: "About" },
-  { to: "/contact", label: "Contact" },
-  { to: "/privacy", label: "Privacy" },
-  { to: "/terms", label: "Terms" },
-];
+const Footer = () => {
+  return (
+    <footer className="relative px-6 py-16">
+      {/* Gradient divider */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple/50 to-transparent" />
+      
+      <div className="mx-auto max-w-6xl">
+        <div className="rounded-2xl border border-border bg-card/30 p-8 md:p-12 backdrop-blur-sm">
+          <div className="flex flex-col gap-8">
+            {/* Logo and description */}
+            <div className="flex flex-col gap-4">
+              <img 
+                src={vexFullLogo} 
+                alt="VEX - Venture Execute Xcel" 
+                className="h-24 w-auto object-contain object-left"
+              />
+              <p className="max-w-sm text-sm text-muted-foreground mt-2">
+                Minimal. Intentional. Relentless. VEX empowers creators
+                to launch with precision and scale without compromise.
+              </p>
+            </div>
 
-const Footer = () => (
-  <footer className="border-t border-border px-6 py-12">
-    <div className="mx-auto flex max-w-[1100px] flex-col gap-6 md:flex-row md:items-center md:justify-between">
-      <div>
-        <img src={vexWordmark} alt="VEX" className="mb-3 h-7 w-auto" />
-        <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} Vex.ai</p>
+            {/* Divider */}
+            <div className="h-px bg-border" />
+
+            {/* Bottom row */}
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <p className="text-sm text-muted-foreground">
+                © {new Date().getFullYear()} VEX. All rights reserved
+              </p>
+              
+              <nav className="flex items-center gap-6">
+                <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors underline hover:text-purple">
+                  Home
+                </Link>
+                <Link to="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors underline hover:text-purple">
+                  Privacy Policy
+                </Link>
+                <Link to="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors underline hover:text-purple">
+                  Terms of Service
+                </Link>
+              </nav>
+            </div>
+          </div>
+        </div>
       </div>
-      <nav className="flex flex-wrap gap-x-6 gap-y-2">
-        {links.map((l) => (
-          <Link key={l.to} to={l.to} className="py-2 text-sm text-muted-foreground hover:text-foreground">{l.label}</Link>
-        ))}
-      </nav>
-    </div>
-  </footer>
-);
+    </footer>
+  );
+};
 
 export default Footer;

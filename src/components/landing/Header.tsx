@@ -2,32 +2,47 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import vexWordmark from "@/assets/vex-wordmark.png";
 
-const navItems = [
-  { id: "how", label: "How it works" },
-  { id: "services", label: "Tools" },
-  { id: "pricing", label: "Pricing" },
-  { id: "faqs", label: "FAQ" },
-];
+const Header = () => {
+  const navItems = ["Services", "Process", "Benefits", "Pricing", "FAQs"];
 
-const Header = () => (
-  <header className="fixed left-0 right-0 top-0 z-50 border-b border-border bg-background px-6 py-3">
-    <div className="mx-auto flex max-w-[1100px] items-center justify-between">
-      <Link to="/" className="flex items-center">
-        <img src={vexWordmark} alt="VEX" className="h-7 w-auto" />
-      </Link>
-      <nav className="hidden items-center gap-6 md:flex">
-        {navItems.map((item) => (
-          <a key={item.id} href={`#${item.id}`} className="text-sm text-muted-foreground hover:text-foreground">{item.label}</a>
-        ))}
-      </nav>
-      <div className="flex items-center gap-2">
-        <Link to="/auth" className="hidden px-3 py-2 text-sm text-muted-foreground hover:text-foreground sm:block">Log in</Link>
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id.toLowerCase());
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  return (
+    <header className="fixed top-0 left-0 right-0 z-50 px-6 py-4">
+      <div className="container mx-auto flex items-center justify-between">
+        <Link to="/" className="flex items-center gap-3 group">
+          <img 
+            src={vexWordmark} 
+            alt="VEX" 
+            className="h-8 w-auto transition-transform duration-300 group-hover:scale-105"
+          />
+        </Link>
+        
+        <nav className="hidden md:flex items-center gap-1 rounded-full border border-border/50 bg-card/50 backdrop-blur-md px-2 py-1.5">
+          {navItems.map((item) => (
+            <button
+              key={item}
+              onClick={() => scrollToSection(item)}
+              className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors duration-200 rounded-full hover:bg-muted/50"
+            >
+              {item}
+            </button>
+          ))}
+        </nav>
+
         <Link to="/auth?mode=signup">
-          <Button className="h-11 bg-purple px-5 text-accent-foreground hover:bg-purple/90">Sign up</Button>
+          <Button className="bg-lime-400 hover:bg-lime-300 text-background font-medium rounded-full px-6 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-lime-400/20">
+            Sign Up
+          </Button>
         </Link>
       </div>
-    </div>
-  </header>
-);
+    </header>
+  );
+};
 
 export default Header;

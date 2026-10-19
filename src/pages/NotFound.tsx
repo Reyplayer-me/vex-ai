@@ -1,15 +1,24 @@
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import StaticPage from "./StaticPage";
+import { useLocation } from "react-router-dom";
+import { useEffect } from "react";
 
-const NotFound = () => (
-  <StaticPage title="This page doesn't exist">
-    <p>The link may be old, or the address has a typo. Nothing's broken on your end.</p>
-    <div className="flex flex-wrap gap-3 pt-4">
-      <Link to="/"><Button className="h-11 bg-purple text-accent-foreground hover:bg-purple/90">Back to home</Button></Link>
-      <Link to="/dashboard"><Button variant="outline" className="h-11">Go to dashboard</Button></Link>
+const NotFound = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    console.error("404 Error: User attempted to access non-existent route:", location.pathname);
+  }, [location.pathname]);
+
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-muted">
+      <div className="text-center">
+        <h1 className="mb-4 text-4xl font-bold">404</h1>
+        <p className="mb-4 text-xl text-muted-foreground">Oops! Page not found</p>
+        <a href="/" className="text-primary underline hover:text-primary/90">
+          Return to Home
+        </a>
+      </div>
     </div>
-  </StaticPage>
-);
+  );
+};
 
 export default NotFound;
