@@ -1,0 +1,18 @@
+title = "Vex credential scanning"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Generated dependencies and build output, not application source"
+paths = ['''(^|/)(node_modules|dist|dist-ssr)/''']
+
+[[rules]]
+id = "jwt"
+
+[[rules.allowlists]]
+description = "Exact existing public anonymous browser key only; never service or user tokens"
+condition = "AND"
+paths = ['''(^|/)(\.env|src/integrations/supabase/client\.ts)$''']
+regexTarget = "secret"
+regexes = ['''^eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6dG5lYmxpdW5vcmd5c2hyYXZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc0NzM1NjcsImV4cCI6MjA4MzA0OTU2N30\.lk0QUkln3ISnE50zgnT5wr-0PtuA-rnOWcqmTOTMrH8$''']
