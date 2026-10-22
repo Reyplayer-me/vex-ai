@@ -1,12 +1,14 @@
 import { useState } from "react";
-import { Check, Zap, Rocket, Crown } from "lucide-react";
+import { Check, Zap, Rocket, Crown, LockKeyhole } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import AnimatedSection from "./AnimatedSection";
+import { planAvailability, planDestination } from "@/lib/plans";
 
 const plans = [
   {
     name: "Starter",
+    id: "starter" as const,
     icon: Rocket,
     price: { monthly: "Free", annually: "Free" },
     originalPrice: null,
@@ -22,9 +24,10 @@ const plans = [
   },
   {
     name: "Professional",
+    id: "professional" as const,
     icon: Zap,
-    price: { monthly: "Free", annually: "Free" },
-    originalPrice: { monthly: "$29", annually: "$24" },
+    price: { monthly: planAvailability.professional.monthly, annually: planAvailability.professional.annually },
+    originalPrice: null,
     description: "Committed solo founders or small teams ready to build + grow",
     features: [
       "Advanced workflow automation",
@@ -37,9 +40,10 @@ const plans = [
   },
   {
     name: "Enterprise",
+    id: "enterprise" as const,
     icon: Crown,
-    price: { monthly: "Free", annually: "Free" },
-    originalPrice: { monthly: "$39", annually: "$32" },
+    price: { monthly: planAvailability.enterprise.monthly, annually: planAvailability.enterprise.annually },
+    originalPrice: null,
     description: "Perfect for large businesses ready to rule",
     features: [
       "Fully customizable AI automation",
@@ -118,24 +122,15 @@ const PricingSection = () => {
                 </div>
 
                 <div className="mb-4">
-                  {plan.originalPrice && (
-                    <span className="text-lg text-muted-foreground line-through mr-2">
-                      {isAnnual ? plan.originalPrice.annually : plan.originalPrice.monthly}/mo
-                    </span>
-                  )}
                   <span className="text-4xl font-semibold text-foreground transition-all duration-300">
                     {isAnnual ? plan.price.annually : plan.price.monthly}
                   </span>
-                  {plan.originalPrice && (
-                    <span className="ml-2 rounded-full bg-green-500/10 border border-green-500/20 px-2 py-0.5 text-xs text-green-400 font-medium">
-                      Early Access
-                    </span>
-                  )}
+                  {planAvailability[plan.id].comingSoon && <span className="ml-1 text-sm text-muted-foreground">/mo</span>}
                 </div>
 
                 <p className="text-sm text-muted-foreground mb-6">{plan.description}</p>
 
-                <Link to="/auth?mode=signup">
+                <Link to={planDestination(plan.id)}>
                   <Button
                     className={`w-full mb-6 transition-all duration-300 ${
                       plan.popular
@@ -143,7 +138,7 @@ const PricingSection = () => {
                         : "bg-muted hover:bg-muted/80 text-foreground"
                     }`}
                   >
-                    Choose this plan
+                    {planAvailability[plan.id].comingSoon ? <><LockKeyhole className="mr-2 h-4 w-4" />Coming soon</> : "Choose this plan"}
                   </Button>
                 </Link>
 
