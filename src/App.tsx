@@ -15,6 +15,7 @@ import LaunchStrategy from "./pages/LaunchStrategy";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import NotFound from "./pages/NotFound";
+import PlanComingSoon from "./pages/PlanComingSoon";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +38,7 @@ const App = () => (
             <Route path="/launch-strategy" element={<LaunchStrategy />} />
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/terms" element={<TermsOfService />} />
+            <Route path="/plans/:plan" element={<PlanComingSoon />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
