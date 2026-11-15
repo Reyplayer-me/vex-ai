@@ -24,7 +24,7 @@ const Header = () => {
     <header className="fixed left-0 right-0 top-0 z-50 border-b border-border/40 bg-background/80 px-4 py-3 backdrop-blur-md sm:px-6">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3">
         <Link to="/" className="flex min-h-[44px] items-center" aria-label="Vex home">
-          <img src={vexWordmark} alt="VEX" className="h-7 w-auto" />
+          <img src={vexWordmark} alt="Vex" className="h-7 w-auto" />
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex" aria-label="Main">

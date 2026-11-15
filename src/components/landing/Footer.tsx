@@ -9,7 +9,7 @@ const Footer = () => {
     <footer className="relative border-t border-border/50 px-4 py-10 sm:px-6">
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 text-center sm:flex-row sm:justify-between sm:text-left">
         <div>
-          <img src={vexWordmark} alt="VEX" className="mx-auto h-6 w-auto sm:mx-0" />
+          <img src={vexWordmark} alt="Vex" className="mx-auto h-6 w-auto sm:mx-0" />
           <p className="mt-2 text-sm text-muted-foreground">The AI board that tells you whether to build your idea or kill it.</p>
         </div>
         <nav className="flex flex-wrap justify-center gap-x-2 gap-y-1" aria-label="Footer">

@@ -164,7 +164,7 @@ const Auth = () => {
             <Link to="/" className="flex items-center gap-2 group">
               <img
                 src={vexWordmark}
-                alt="VEX"
+                alt="Vex"
                 className="h-6 w-auto transition-transform duration-300 group-hover:scale-105"
               />
             </Link>
@@ -214,7 +214,7 @@ const Auth = () => {
           <Link to="/" className="flex items-center gap-2 group">
             <img
               src={vexWordmark}
-              alt="VEX"
+              alt="Vex"
               className="h-6 w-auto transition-transform duration-300 group-hover:scale-105"
             />
           </Link>

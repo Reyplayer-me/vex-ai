@@ -1,86 +1,27 @@
-# 🚀 Vex.ai — Your AI Co-Founder & Startup Boardroom
+# Vex: the AI board that tells you whether to build your idea or kill it
 
-Vex.ai is an AI-powered startup operating system that helps founders validate ideas, make decisions, and build companies faster.
+Vex is an AI startup validator for first-time founders. Type an idea and get an honest,
+evidence-backed verdict: PROCEED, PIVOT or KILL. Live at https://vex-ai.lovable.app
 
-Instead of asking one AI for advice, Vex simulates a **full executive boardroom** that debates your startup like a real company would.
+## What Vex does
 
----
+- **Free verdict, no signup:** an overall score, four sub-scores, the top three risks, the one
+  question you must answer before you build, and real competitors found by live web search,
+  each with its source link. Every result shows a confidence level.
+- **Five advisors:** CEO, Execution Officer, Risk Analyst, Psychologist (detects founder bias)
+  and Industry Expert.
+- **Full report (free during beta):** the boardroom debate and the board's decision, a
+  Foundations → MVP → Launch → Iterate roadmap with Speed / Cost / Learning / Scale focus, a
+  build plan with a First Weekend Plan, and a launch plan.
+- **Idea tracker:** saved ideas, an assumptions checklist and optional weekly check-ins.
+- **Sharing:** opt-in verdict cards and public summary links. Ideas are private by default.
 
-## 🧠 What Vex Does
+Vex gives structured opinions, not guarantees.
 
-When you enter a startup idea, Vex generates a simulated boardroom with specialized AI executives:
+## Setup
 
-- 🧑‍💼 CEO — strategic direction & vision
-- 🧠 CTO — technical feasibility & system design
-- 💰 Investor — risk, ROI, market potential
-- 📈 Marketing Lead — growth, positioning, audience
-- 🧪 Product Lead — UX, features, user needs
-- 🧍 Psychologist — human behavior & user motivation
-
-They **argue, challenge, and refine your idea** before giving a final recommendation.
-
----
-
-## ⚙️ Core Features (MVP)
-
-- AI Boardroom multi-agent simulation
-- Idea validation (Go / Pivot / Reject)
-- Startup risk analysis
-- Opportunity detection
-- Structured execution roadmap
-- Dynamic debate-style AI responses
-- Founder onboarding flow (industry + goal-based personalization)
-
----
-
-## 🎯 Why This Exists
-
-Most AI tools give single answers.
-
-Real startups are built through **conflict, disagreement, and iteration**.
-
-Vex simulates that missing layer — the thinking process of a real company before it exists.
-
----
-
-
-## 🌍 Vision
-
-Vex.ai is building the future of **AI-native entrepreneurship**.
-
-Not just chatbots.
-
-But **AI executive teams that help build real companies.**
-
----
-
-## 📌 Status
-
-🚧 MVP Stage — actively being built  
-🔥 Looking for early founders & testers
-
----
-
-## 🤝 Try It / Contribute
-
-If you’re building a startup, drop your idea in the system and test the Boardroom.
-
-Feedback is welcome — especially what feels confusing, inaccurate, or unhelpful.
-
----
-
-## ⚡ Built by
-
-A young builder creating tools for founders who think bigger than solo execution.
-
----
-
-## 🚀 Next Steps
-
-- Improve AI debate realism
-- Add memory across sessions
-- Add investor simulation scoring system
-- Add startup roadmap generator
+See [docs/BETA_SETUP.md](docs/BETA_SETUP.md) for the migration, secrets, admin role, sample
+report and daily job.
 
 ## Pre-deployment security
 
