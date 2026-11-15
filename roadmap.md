@@ -1,5 +1,14 @@
 # Security automation
 
+## Vex verdict-first improvement brief
+- [ ] Clean landing page, unify five advisors, mobile-first idea entry and honest beta pricing.
+- [ ] Allow valid emails and Google sign-in.
+- [ ] Add evidence-backed anonymous validation with server limits, caching and friendly recovery.
+- [ ] Generate genuine sample report, downloadable cards and opt-in public summary sharing.
+- [ ] Unlock saved full reports, My ideas, assumptions, data deletion and optional weekly check-ins.
+- [ ] Add anonymous event funnel and protected admin counts.
+- [ ] Verify visitor and signed-in flows end-to-end.
+
 - [x] Lock paid plans behind Coming soon screens without offering them free.
 
 - [ ] Add GitHub Actions secret, dependency, and code/configuration scanning.
