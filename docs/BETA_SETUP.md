@@ -10,6 +10,9 @@ Nothing here needs code changes.
 signup rule. In Lovable, ask: "Apply the migration in supabase/migrations/20261115120000_vex_verdict_beta.sql".
 Afterwards Lovable regenerates `src/integrations/supabase/types.ts`.
 
+Then apply `supabase/migrations/20261115130000_waitlist.sql` for the waitlist at `/waitlist`. It
+must run after the migration above, because its admin stats use the admin role.
+
 ## 2. Add secrets (Lovable → Cloud → Secrets)
 | Secret | Needed for | Notes |
 |---|---|---|
@@ -18,6 +21,8 @@ Afterwards Lovable regenerates `src/integrations/supabase/types.ts`.
 | `CRON_SECRET` | Daily job | Any long random string. |
 | `RESEND_API_KEY`, `CHECKIN_FROM_EMAIL` | Weekly check-in emails | Optional. Needs a domain you own verified in Resend. Until set, the job only runs the cleanup. |
 | `SITE_URL` | Links in emails | Defaults to https://vex-ai.lovable.app |
+| `WAITLIST_IP_SALT` | Waitlist spam limit (5 signups per hour per IP) | Any long random string. |
+| `WAITLIST_ALLOWED_ORIGIN` | Waitlist CORS | `https://vex-ai.lovable.app`. Defaults to any origin. |
 
 `LOVABLE_API_KEY` already exists.
 
@@ -31,7 +36,9 @@ After signing in once, run in the SQL editor (replace the email):
 insert into public.user_roles (user_id, role)
 select id, 'admin' from auth.users where email = 'YOUR_EMAIL' on conflict do nothing;
 ```
-Then open `/admin` for the funnel.
+Then open `/admin` for the funnel and the waitlist stats (total signups, and views → signups by
+`utm_source`). Use links like `https://vex-ai.lovable.app/waitlist?utm_source=tiktok` so each
+channel shows up separately. Waitlist emails and counts are never shown publicly.
 
 ## 5. Generate the sample report
 On `/admin`, use "Generate and publish sample" with a made-up idea. It runs the real pipeline and
@@ -51,8 +58,10 @@ It deletes unclaimed free runs after 30 days (as the privacy page promises) and 
 check-ins to people who opted in.
 
 ## 7. Optional
-- **Contact email:** set `VITE_CONTACT_EMAIL` to show a contact address in the footer and privacy
-  page. Until then, Contact links to the privacy page.
+- **Contact email:** set `VITE_CONTACT_EMAIL` to show a contact address in the app and waitlist
+  footers and the privacy page. Until then, Contact links to the privacy page.
+- **Waitlist mock:** for local development only, `VITE_WAITLIST_MOCK=true` in `.env.development.local`
+  fakes the waitlist backend. An email ending in `@fail.test` then shows the server-error state.
 - **"Edit with Lovable" badge:** Project settings → hide badge (paid plans only). It's not in the code.
 - **Default link preview image:** `index.html` still uses Lovable's default `og:image`. Replace it
   with a 1200×630 Vex image in `public/`.

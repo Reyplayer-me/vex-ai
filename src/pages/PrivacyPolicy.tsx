@@ -15,6 +15,14 @@ const PrivacyPolicy = () => (
       <li><strong>Your assumptions checklist</strong> and whether you turned on weekly check-in emails.</li>
     </ul>
 
+    <h2>The waitlist</h2>
+    <p>
+      If you join the waitlist we store your email address, the optional idea you tell us you'd test first, and where you came
+      from (the utm_source, utm_medium, utm_campaign and ref values on the link you followed). We also store a hashed version of
+      your IP address for an hour to stop spam signups, and anonymous page events with no email or idea text. We use your email
+      only to tell you when your spot opens.
+    </p>
+
     <h2>Who processes it</h2>
     <ul>
       <li>Your idea text is sent to our AI provider (through the Lovable AI gateway) to produce the verdict and report.</li>

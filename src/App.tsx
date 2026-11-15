@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import CookieConsent from "@/components/CookieConsent";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -16,6 +16,9 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import NotFound from "./pages/NotFound";
 import { trackVisit } from "@/lib/analytics";
+
+// The waitlist is its own light-themed page; load it only when visited.
+const Waitlist = lazy(() => import("./waitlist/Waitlist"));
 
 const queryClient = new QueryClient();
 
@@ -55,6 +58,14 @@ const App = () => (
             <Route path="/admin" element={<Admin />} />
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/terms" element={<TermsOfService />} />
+            <Route
+              path="/waitlist"
+              element={
+                <Suspense fallback={<div className="min-h-screen bg-[#f3f0e8]" />}>
+                  <Waitlist />
+                </Suspense>
+              }
+            />
             {/* Old links from before the verdict-first beta */}
             {["/dashboard", "/onboarding", "/validate", "/boardroom", "/build-plan", "/launch-strategy"].map((path) => (
               <Route key={path} path={path} element={<Navigate to="/ideas" replace />} />

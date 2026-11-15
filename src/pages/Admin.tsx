@@ -37,6 +37,91 @@ type Counts = Record<string, { total: number; visitors: number }>;
 
 const pct = (a: number, b: number) => (b ? `${((a / b) * 100).toFixed(1)}%` : "–");
 
+interface WaitlistRow {
+  utm_source: string;
+  views: number;
+  signups: number;
+  duplicates: number;
+  notes: number;
+}
+
+const WaitlistStats = ({ days }: { days: number }) => {
+  const [rows, setRows] = useState<WaitlistRow[] | null>(null);
+  const [total, setTotal] = useState<number | null>(null);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    const since = new Date(Date.now() - days * 24 * 3600_000).toISOString();
+    Promise.all([db.rpc("admin_waitlist_stats", { _since: since }), db.rpc("admin_waitlist_total")]).then(([stats, count]) => {
+      if (stats.error || count.error) {
+        setError(true);
+        return;
+      }
+      setError(false);
+      setRows(stats.data ?? []);
+      setTotal(Number(count.data));
+    });
+  }, [days]);
+
+  const sum = (key: keyof Omit<WaitlistRow, "utm_source">) => (rows ?? []).reduce((n, r) => n + Number(r[key]), 0);
+
+  return (
+    <section className="mt-10">
+      <h2 className="mb-3 font-sans text-lg font-semibold text-foreground">Waitlist</h2>
+      {error && <p className="text-sm text-muted-foreground">Waitlist stats aren't available. Has the waitlist migration been applied?</p>}
+      {!error && rows && (
+        <>
+          <div className="mb-4 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-xl border border-border bg-card/60 p-5">
+              <p className="text-sm text-muted-foreground">People on the waitlist (all time)</p>
+              <p className="font-orbitron text-3xl font-bold text-foreground">{total}</p>
+            </div>
+            <div className="rounded-xl border border-border bg-card/60 p-5">
+              <p className="text-sm text-muted-foreground">Page view → signup</p>
+              <p className="font-orbitron text-3xl font-bold text-foreground">{pct(sum("signups"), sum("views"))}</p>
+              <p className="text-xs text-muted-foreground">
+                {sum("signups")} signups from {sum("views")} views
+              </p>
+            </div>
+          </div>
+          <div className="overflow-x-auto rounded-xl border border-border">
+            <table className="w-full text-sm">
+              <thead className="bg-card text-left text-muted-foreground">
+                <tr>
+                  <th className="p-3 font-medium">Source</th>
+                  <th className="p-3 text-right font-medium">Views</th>
+                  <th className="p-3 text-right font-medium">Signups</th>
+                  <th className="p-3 text-right font-medium">Rate</th>
+                  <th className="p-3 text-right font-medium">Ideas left</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.length === 0 && (
+                  <tr className="border-t border-border">
+                    <td colSpan={5} className="p-3 text-muted-foreground">No waitlist activity in this range.</td>
+                  </tr>
+                )}
+                {rows.map((r) => (
+                  <tr key={r.utm_source} className="border-t border-border">
+                    <td className="p-3 font-mono text-xs text-foreground sm:text-sm">{r.utm_source}</td>
+                    <td className="p-3 text-right tabular-nums text-foreground">{r.views}</td>
+                    <td className="p-3 text-right tabular-nums text-foreground">{r.signups}</td>
+                    <td className="p-3 text-right tabular-nums text-muted-foreground">{pct(Number(r.signups), Number(r.views))}</td>
+                    <td className="p-3 text-right tabular-nums text-muted-foreground">{r.notes}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">
+            Source comes from utm_source on the link (for example ?utm_source=tiktok). Duplicate signups aren't counted as signups.
+          </p>
+        </>
+      )}
+    </section>
+  );
+};
+
 const SampleGenerator = () => {
   const [idea, setIdea] = useState("");
   const [audience, setAudience] = useState("");
@@ -191,6 +276,8 @@ const Admin = () => {
                 ))}
               </ul>
             </section>
+
+            <WaitlistStats days={days} />
 
             <SampleGenerator />
           </>
