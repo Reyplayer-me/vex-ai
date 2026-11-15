@@ -1,52 +1,30 @@
 import { Link } from "react-router-dom";
-import vexFullLogo from "@/assets/vex-full-logo.png";
+import vexWordmark from "@/assets/vex-wordmark.png";
+
+// Set VITE_CONTACT_EMAIL to publish a contact address; until then Contact opens the privacy page section.
+export const CONTACT_EMAIL: string | undefined = import.meta.env.VITE_CONTACT_EMAIL;
 
 const Footer = () => {
   return (
-    <footer className="relative px-6 py-16">
-      {/* Gradient divider */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple/50 to-transparent" />
-      
-      <div className="mx-auto max-w-6xl">
-        <div className="rounded-2xl border border-border bg-card/30 p-8 md:p-12 backdrop-blur-sm">
-          <div className="flex flex-col gap-8">
-            {/* Logo and description */}
-            <div className="flex flex-col gap-4">
-              <img 
-                src={vexFullLogo} 
-                alt="VEX - Venture Execute Xcel" 
-                className="h-24 w-auto object-contain object-left"
-              />
-              <p className="max-w-sm text-sm text-muted-foreground mt-2">
-                Minimal. Intentional. Relentless. VEX empowers creators
-                to launch with precision and scale without compromise.
-              </p>
-            </div>
-
-            {/* Divider */}
-            <div className="h-px bg-border" />
-
-            {/* Bottom row */}
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-              <p className="text-sm text-muted-foreground">
-                © {new Date().getFullYear()} VEX. All rights reserved
-              </p>
-              
-              <nav className="flex items-center gap-6">
-                <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors underline hover:text-purple">
-                  Home
-                </Link>
-                <Link to="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors underline hover:text-purple">
-                  Privacy Policy
-                </Link>
-                <Link to="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors underline hover:text-purple">
-                  Terms of Service
-                </Link>
-              </nav>
-            </div>
-          </div>
+    <footer className="relative border-t border-border/50 px-4 py-10 sm:px-6">
+      <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 text-center sm:flex-row sm:justify-between sm:text-left">
+        <div>
+          <img src={vexWordmark} alt="VEX" className="mx-auto h-6 w-auto sm:mx-0" />
+          <p className="mt-2 text-sm text-muted-foreground">The AI board that tells you whether to build your idea or kill it.</p>
         </div>
+        <nav className="flex flex-wrap justify-center gap-x-2 gap-y-1" aria-label="Footer">
+          <Link to="/privacy" className="inline-flex min-h-[44px] items-center px-3 text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
+            Privacy
+          </Link>
+          <Link to="/terms" className="inline-flex min-h-[44px] items-center px-3 text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
+            Terms
+          </Link>
+          <a href={CONTACT_EMAIL ? `mailto:${CONTACT_EMAIL}` : "/privacy#contact"} className="inline-flex min-h-[44px] items-center px-3 text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
+            Contact
+          </a>
+        </nav>
       </div>
+      <p className="mt-6 text-center text-xs text-muted-foreground">© {new Date().getFullYear()} Vex. Structured opinions, not guarantees.</p>
     </footer>
   );
 };

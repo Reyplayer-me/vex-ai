@@ -19,6 +19,10 @@ export default {
             'advisor-risk': 'hsl(var(--advisor-risk))',
             'advisor-psychologist': 'hsl(var(--advisor-psychologist))',
             'advisor-industry': 'hsl(var(--advisor-industry))',
+            'advisor-ceo': 'hsl(var(--advisor-ceo))',
+            'verdict-proceed': 'hsl(var(--verdict-proceed))',
+            'verdict-pivot': 'hsl(var(--verdict-pivot))',
+            'verdict-kill': 'hsl(var(--verdict-kill))',
             'google-background': 'hsl(var(--google-background))',
             'google-border': 'hsl(var(--google-border))',
             'google-foreground': 'hsl(var(--google-foreground))',
@@ -127,7 +131,7 @@ export default {
 		},
 		fontFamily: {
 			sans: [
-				'Orbitron',
+				'Inter',
 				'ui-sans-serif',
 				'system-ui',
 				'sans-serif'

@@ -1,77 +1,51 @@
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import AnimatedSection from "./AnimatedSection";
 
 const faqs = [
   {
-    question: "How can AI automation help my business?",
+    question: "How does Vex score ideas?",
     answer:
-      "AI automation can streamline repetitive tasks, improve decision-making with data-driven insights, enhance customer experiences through personalized interactions, and reduce operational costs. It allows you to focus on strategic growth while AI handles the execution.",
+      "First we search the web for products that already do what you describe, what they charge, and any regulations that might apply. Then an AI model, acting as a board of five advisors, scores your idea from 0 to 10 on problem clarity, market demand, execution difficulty and differentiation, using those search results as evidence. The overall score and the PROCEED, PIVOT or KILL verdict come from the same pass. Every result shows a confidence level so you know how much evidence it rests on.",
   },
   {
-    question: "Is AI automation difficult to integrate?",
+    question: "Where do the competitors come from?",
     answer:
-      "Not at all. VEX is designed to integrate seamlessly with your existing workflows. Our platform handles the technical complexity so you can focus on your business. Most users are up and running within minutes.",
+      "Only from live web search results. Each competitor links to the page it was found on, and we check that the product is actually named on that page. If a price isn't in the results, we say so instead of guessing. If the search fails, we show \"competitors unverified\" and lower the confidence rather than make anything up.",
   },
   {
-    question: "What industries can benefit from AI automation?",
+    question: "Is my idea private?",
     answer:
-      "Virtually every industry can benefit from AI automation — from startups and tech companies to healthcare, education, finance, e-commerce, and more. Any business that wants to work smarter and scale faster can leverage AI.",
+      "Yes, by default. Your idea is stored so we can show you your result and, if you sign in, save it to your account. It's never public unless you press Share, and even then the public page only shows the verdict, the score, the one-line summary and a shortened version of your idea, never the full report. Your idea text is sent to our AI and search providers to produce the result. You can delete everything from your account at any time.",
   },
   {
-    question: "Do I need technical knowledge to use AI automation?",
+    question: "Is this financial or legal advice?",
     answer:
-      "No technical expertise is required. VEX is built for founders and creators, not engineers. Our intuitive interface guides you through every step, and our AI handles all the complex work behind the scenes.",
+      "No. Vex gives structured opinions, not guarantees. AI can be wrong, and search results can be incomplete or out of date. Use the verdict as a starting point for your own research and the conversations you have with real customers, and talk to a qualified professional about legal, tax or financial questions.",
   },
   {
-    question: "What kind of support do you offer?",
+    question: "Is it free?",
     answer:
-      "We offer comprehensive support including email and chat support for all plans, priority support for Professional users, and 24/7 VIP support for Enterprise customers. Our team is always ready to help you succeed.",
+      "Yes, during beta. You can run 3 ideas a day without an account. With a free account you get more runs plus the full report: the boardroom debate, roadmap, build plan and launch plan. After beta we plan to charge $9 per full report. The free verdict will stay free.",
   },
 ];
 
 const FAQSection = () => {
   return (
-    <section id="faqs" className="relative px-6 py-32">
+    <section id="faq" className="px-4 py-16 sm:px-6 md:py-24">
       <div className="mx-auto max-w-3xl">
-        {/* Section Header */}
-        <AnimatedSection className="text-center mb-12">
-          <span className="inline-block rounded-full border border-border bg-card/50 px-4 py-1.5 text-sm text-muted-foreground mb-6">
-            FAQs
-          </span>
-          <h2 className="text-4xl md:text-5xl font-semibold text-foreground mb-4">
-            We've Got the Answers
-            <br />
-            You're Looking For
-          </h2>
-          <p className="mx-auto max-w-xl text-lg text-muted-foreground">
-            Quick answers to your AI automation questions.
-          </p>
+        <AnimatedSection className="mb-10 text-center">
+          <h2 className="text-3xl font-semibold text-foreground md:text-4xl">Questions, answered straight</h2>
         </AnimatedSection>
-
-        {/* FAQ Accordion */}
-        <AnimatedSection delay={200}>
-          <Accordion type="single" collapsible className="space-y-4">
-            {faqs.map((faq, index) => (
-              <AccordionItem
-                key={index}
-                value={`item-${index}`}
-                className="rounded-xl border border-border bg-card/30 px-6 transition-all duration-300 data-[state=open]:border-purple/30 hover:border-purple/20"
-              >
-                <AccordionTrigger className="text-left text-foreground hover:no-underline py-5 transition-colors duration-300 hover:text-purple">
-                  {faq.question}
-                </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground pb-5">
-                  {faq.answer}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </AnimatedSection>
+        <Accordion type="single" collapsible className="space-y-3">
+          {faqs.map((faq, index) => (
+            <AccordionItem key={index} value={`item-${index}`} className="rounded-xl border border-border bg-card/40 px-5">
+              <AccordionTrigger className="min-h-[56px] text-left font-sans text-base font-medium text-foreground hover:no-underline">
+                {faq.question}
+              </AccordionTrigger>
+              <AccordionContent className="text-base leading-relaxed text-muted-foreground">{faq.answer}</AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
       </div>
     </section>
   );

@@ -1,103 +1,35 @@
-import { Clock, Sparkles, Users, Compass, Code, Rocket, CheckCircle } from "lucide-react";
 import AnimatedSection from "./AnimatedSection";
 
-const timelineSteps = [
-  {
-    minute: "1",
-    title: "Describe your idea",
-    description: "Tell us what you're building, who it's for, and what your goal is",
-    icon: Sparkles,
-  },
-  {
-    minute: "3",
-    title: "AI Boardroom debates it",
-    description: "Five AI advisors — CEO, Execution, Risk, Psychologist, Industry Expert — challenge your idea",
-    icon: Users,
-  },
-  {
-    minute: "5",
-    title: "Get your validation verdict",
-    description: "Scored on clarity, market demand, execution, and differentiation — Proceed, Pivot, or Kill",
-    icon: CheckCircle,
-  },
-  {
-    minute: "7",
-    title: "Roadmap & build plan generated",
-    description: "Phased roadmap, tech stack, architecture, and a First Weekend Plan tailored to your skill level",
-    icon: Code,
-  },
-  {
-    minute: "10",
-    title: "Launch strategy ready",
-    description: "Target persona, growth channel, launch checklist, and traction metrics — you're ready to move",
-    icon: Rocket,
-  },
+const steps = [
+  { time: "1 min", title: "Type your idea", description: "No signup. One or two sentences is enough." },
+  { time: "~1 min", title: "Get the verdict", description: "PROCEED, PIVOT or KILL, four scores, the top three risks and real competitors with links." },
+  { time: "~3 min", title: "Unlock the full report", description: "Free with an email during beta: the five-advisor debate and the board's decision." },
+  { time: "~5 min", title: "Get the plan", description: "A four-phase roadmap, a build plan for your skill level and a launch plan for your first users." },
 ];
 
 const First10MinutesSection = () => {
   return (
-    <section className="relative px-6 py-32 overflow-hidden">
-      {/* Background gradient */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-purple/5 blur-3xl" />
-      </div>
-
-      <div className="mx-auto max-w-4xl relative z-10">
-        <AnimatedSection className="text-center mb-16">
-          <span className="inline-flex items-center gap-2 rounded-full border border-purple/30 bg-purple/10 px-4 py-1.5 text-sm text-purple mb-6">
-            <Clock className="h-4 w-4" />
-            Quick Start
-          </span>
-          <h2 className="text-4xl md:text-5xl font-semibold text-foreground mb-4">
-            Your First 10 Minutes on Vex
-          </h2>
-          <p className="mx-auto max-w-xl text-lg text-muted-foreground">
-            From raw idea to launch-ready plan in less time than it takes to make coffee.
-          </p>
+    <section id="what-you-get" className="px-4 py-16 sm:px-6 md:py-24">
+      <div className="mx-auto max-w-3xl">
+        <AnimatedSection className="mb-10 text-center">
+          <h2 className="mb-3 text-3xl font-semibold text-foreground md:text-4xl">What you get in 10 minutes</h2>
+          <p className="text-muted-foreground">Times are typical, not promises.</p>
         </AnimatedSection>
-
-        {/* Timeline */}
-        <div className="relative">
-          {/* Vertical line */}
-          <div className="absolute left-8 top-0 bottom-0 w-px bg-gradient-to-b from-purple via-purple/50 to-transparent hidden md:block" />
-
-          <div className="space-y-8">
-            {timelineSteps.map((step, index) => (
-              <AnimatedSection key={step.minute} delay={index * 150}>
-                <div className="flex gap-6 items-start">
-                  {/* Minute badge */}
-                  <div className="relative flex-shrink-0">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-purple/30 bg-purple/10 transition-all duration-300 hover:bg-purple/20 hover:scale-105">
-                      <div className="text-center">
-                        <span className="text-2xl font-bold text-purple">{step.minute}</span>
-                        <span className="block text-xs text-muted-foreground">min</span>
-                      </div>
-                    </div>
-                    {/* Connector dot */}
-                    <div className="absolute -left-[1px] top-1/2 -translate-y-1/2 -translate-x-[calc(2rem-2px)] h-2 w-2 rounded-full bg-purple hidden md:block" />
-                  </div>
-
-                  {/* Content */}
-                  <div className="flex-1 rounded-xl border border-border bg-card/30 p-6 transition-all duration-300 hover:border-purple/30 hover:bg-card/50">
-                    <div className="flex items-start gap-4">
-                      <div className="flex-shrink-0 rounded-lg bg-muted p-2">
-                        <step.icon className="h-5 w-5 text-purple" />
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-semibold text-foreground mb-1">
-                          {step.title}
-                        </h3>
-                        <p className="text-muted-foreground">
-                          {step.description}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+        <ol className="space-y-4">
+          {steps.map((step, index) => (
+            <AnimatedSection key={step.title} delay={index * 100}>
+              <li className="flex gap-4 rounded-xl border border-border bg-card/30 p-5">
+                <span className="flex h-14 w-16 shrink-0 items-center justify-center rounded-lg border border-purple/30 bg-purple/10 text-center text-sm font-bold text-purple-glow">
+                  {step.time}
+                </span>
+                <div>
+                  <h3 className="mb-1 font-sans text-lg font-semibold text-foreground">{step.title}</h3>
+                  <p className="text-muted-foreground">{step.description}</p>
                 </div>
-              </AnimatedSection>
-            ))}
-          </div>
-        </div>
+              </li>
+            </AnimatedSection>
+          ))}
+        </ol>
       </div>
     </section>
   );

@@ -1,45 +1,54 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 import vexWordmark from "@/assets/vex-wordmark.png";
 
-const Header = () => {
-  const navItems = ["Services", "Process", "Benefits", "Pricing", "FAQs"];
+const navItems = [
+  { label: "Sample", href: "/sample" },
+  { label: "The board", href: "/#board" },
+  { label: "Pricing", href: "/#pricing" },
+  { label: "FAQ", href: "/#faq" },
+];
 
-  const scrollToSection = (id: string) => {
-    const element = document.getElementById(id.toLowerCase());
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-  };
+const Header = () => {
+  const [signedIn, setSignedIn] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setSignedIn(!!data.session));
+    const { data } = supabase.auth.onAuthStateChange((_e, session) => setSignedIn(!!session));
+    return () => data.subscription.unsubscribe();
+  }, []);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 px-6 py-4">
-      <div className="container mx-auto flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-3 group">
-          <img 
-            src={vexWordmark} 
-            alt="VEX" 
-            className="h-8 w-auto transition-transform duration-300 group-hover:scale-105"
-          />
+    <header className="fixed left-0 right-0 top-0 z-50 border-b border-border/40 bg-background/80 px-4 py-3 backdrop-blur-md sm:px-6">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3">
+        <Link to="/" className="flex min-h-[44px] items-center" aria-label="Vex home">
+          <img src={vexWordmark} alt="VEX" className="h-7 w-auto" />
         </Link>
-        
-        <nav className="hidden md:flex items-center gap-1 rounded-full border border-border/50 bg-card/50 backdrop-blur-md px-2 py-1.5">
+
+        <nav className="hidden items-center gap-1 md:flex" aria-label="Main">
           {navItems.map((item) => (
-            <button
-              key={item}
-              onClick={() => scrollToSection(item)}
-              className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors duration-200 rounded-full hover:bg-muted/50"
-            >
-              {item}
-            </button>
+            <a key={item.label} href={item.href} className="rounded-full px-4 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground">
+              {item.label}
+            </a>
           ))}
         </nav>
 
-        <Link to="/auth?mode=signup">
-          <Button className="bg-lime-400 hover:bg-lime-300 text-background font-medium rounded-full px-6 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-lime-400/20">
-            Sign Up
+        <div className="flex items-center gap-2">
+          {signedIn ? (
+            <Button asChild variant="outline" className="h-11 rounded-full px-5">
+              <Link to="/ideas">My ideas</Link>
+            </Button>
+          ) : (
+            <Button asChild variant="ghost" className="h-11 rounded-full px-4 text-muted-foreground">
+              <Link to="/auth?mode=login">Sign in</Link>
+            </Button>
+          )}
+          <Button asChild variant="cta" className="hidden h-11 rounded-full px-5 font-semibold sm:inline-flex">
+            <a href="/#test">Test my idea</a>
           </Button>
-        </Link>
+        </div>
       </div>
     </header>
   );

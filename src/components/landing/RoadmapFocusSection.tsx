@@ -13,7 +13,7 @@ const focusOptions = [
 const roadmapVariants = {
   speed: [
     { week: "Week 1", task: "Ship MVP with core feature only" },
-    { week: "Week 2", task: "Get 10 paying customers" },
+    { week: "Week 2", task: "Ask 10 people to pay before you build more" },
     { week: "Week 3", task: "Iterate based on feedback" },
   ],
   cost: [
@@ -46,18 +46,18 @@ const RoadmapFocusSection = () => {
   };
 
   return (
-    <section className="relative px-6 py-32">
+    <section className="relative px-4 py-16 sm:px-6 md:py-24">
       <div className="mx-auto max-w-4xl">
         <AnimatedSection className="text-center mb-12">
           <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card/50 px-4 py-1.5 text-sm text-muted-foreground mb-6">
             <RefreshCw className="h-4 w-4" />
             Customizable Roadmaps
           </span>
-          <h2 className="text-4xl md:text-5xl font-semibold text-foreground mb-4">
+          <h2 className="text-3xl md:text-5xl font-semibold text-foreground mb-4">
             Your Roadmap, Your Focus
           </h2>
           <p className="mx-auto max-w-xl text-lg text-muted-foreground">
-            Regenerate your roadmap with a different priority. The strategy adapts to what matters most to you.
+            In the full report, switch your roadmap's priority and see how the plan changes. Try it on this example.
           </p>
         </AnimatedSection>
 
@@ -68,7 +68,7 @@ const RoadmapFocusSection = () => {
               <Button
                 key={option.id}
                 variant={selectedFocus === option.id ? "default" : "outline"}
-                className={`gap-2 transition-all duration-300 ${
+                className={`h-11 gap-2 transition-all duration-300 ${
                   selectedFocus === option.id 
                     ? "bg-purple hover:bg-purple/90 text-accent-foreground" 
                     : "hover:border-purple/50"
@@ -84,8 +84,8 @@ const RoadmapFocusSection = () => {
 
         {/* Generated roadmap preview */}
         <AnimatedSection delay={300}>
-          <div className={`rounded-2xl border border-border bg-card/30 p-8 transition-all duration-500 ${isRegenerating ? 'opacity-50 scale-[0.99]' : 'opacity-100 scale-100'}`}>
-            <div className="flex items-center justify-between mb-6">
+          <div className={`rounded-2xl border border-border bg-card/30 p-5 sm:p-8 transition-all duration-500 ${isRegenerating ? 'opacity-50 scale-[0.99]' : 'opacity-100 scale-100'}`}>
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
               <div className="flex items-center gap-3">
                 {focusOptions.find(f => f.id === selectedFocus) && (
                   <>
@@ -121,7 +121,7 @@ const RoadmapFocusSection = () => {
 
             <div className="mt-6 pt-6 border-t border-border/50">
               <p className="text-sm text-muted-foreground text-center">
-                Click any focus above to see how your roadmap adapts
+                Example only. Your roadmap is written for your idea.
               </p>
             </div>
           </div>

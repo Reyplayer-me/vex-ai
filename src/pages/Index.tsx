@@ -1,5 +1,6 @@
 import Header from "@/components/landing/Header";
 import HeroSection from "@/components/landing/HeroSection";
+import SampleReportSection from "@/components/landing/SampleReportSection";
 import BoardroomSection from "@/components/landing/BoardroomSection";
 import First10MinutesSection from "@/components/landing/First10MinutesSection";
 import RoadmapFocusSection from "@/components/landing/RoadmapFocusSection";
@@ -16,6 +17,7 @@ const Index = () => {
       <Header />
       <main className="relative z-10">
         <HeroSection />
+        <SampleReportSection />
         <BoardroomSection />
         <First10MinutesSection />
         <RoadmapFocusSection />

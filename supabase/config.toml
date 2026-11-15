@@ -14,3 +14,15 @@ verify_jwt = false
 
 [functions.generate-launch-strategy]
 verify_jwt = false
+
+[functions.quick-verdict]
+verify_jwt = false
+
+[functions.full-report]
+verify_jwt = false
+
+[functions.idea-actions]
+verify_jwt = false
+
+[functions.weekly-checkin]
+verify_jwt = false

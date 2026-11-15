@@ -20,6 +20,9 @@ const Auth = () => {
 
   const mode = searchParams.get("mode") || "signup";
   const isLogin = mode === "login";
+  // Only same-site paths, never a full URL.
+  const nextParam = searchParams.get("next");
+  const next = nextParam && /^\/[a-z0-9/_-]*$/i.test(nextParam) ? nextParam : "/ideas";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -31,19 +34,19 @@ const Auth = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         if (session?.user) {
-          navigate(sessionStorage.getItem("vex-auth-next") || "/onboarding");
+          navigate(next, { replace: true });
         }
       }
     );
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
-        navigate(sessionStorage.getItem("vex-auth-next") || "/onboarding");
+        navigate(next, { replace: true });
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, next]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,7 +98,7 @@ const Auth = () => {
           description: "Redirecting to your workspace...",
         });
       } else {
-        const redirectUrl = `${window.location.origin}/auth`;
+        const redirectUrl = `${window.location.origin}/auth?mode=login&next=${encodeURIComponent(next)}`;
 
         const { data, error } = await supabase.auth.signUp({
           email: email.trim(),
@@ -226,15 +229,15 @@ const Auth = () => {
             </h1>
             <p className="text-muted-foreground">
               {isLogin
-                ? "Sign in to continue to VEX"
-                : "Start building with an AI co-founder"}
+                ? "Sign in to see your saved ideas"
+                : "Save your ideas and unlock full reports, free during beta"}
             </p>
           </div>
 
           <Button variant="google" size="lg" className="mb-6 w-full px-3 text-sm" disabled={loading} onClick={async () => {
             setLoading(true);
             try {
-              const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: `${window.location.origin}/auth` });
+              const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: `${window.location.origin}/auth?mode=login&next=${encodeURIComponent(next)}` });
               if (result.error) toast({ title: "Google sign-in didn't finish", description: "Please try again or continue with email.", variant: "destructive" });
             } catch { toast({ title: "Google sign-in didn't finish", description: "Please try again or continue with email.", variant: "destructive" }); }
             finally { setLoading(false); }
@@ -250,7 +253,7 @@ const Auth = () => {
                   placeholder="you@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10 transition-all duration-300 focus:border-purple focus:ring-purple"
+                  className="h-12 pl-10 text-base transition-all duration-300 focus:border-purple focus:ring-purple"
                 />
               </div>
             </div>
@@ -265,12 +268,13 @@ const Auth = () => {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 pr-10 transition-all duration-300 focus:border-purple focus:ring-purple"
+                  className="h-12 pl-10 pr-12 text-base transition-all duration-300 focus:border-purple focus:ring-purple"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  className="absolute right-1 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
                 >
                   {showPassword ? (
                     <EyeOff className="h-4 w-4" />

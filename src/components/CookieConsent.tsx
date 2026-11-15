@@ -31,16 +31,16 @@ const CookieConsent = () => {
         <div className="flex items-start gap-3 mb-4">
           <Cookie className="h-5 w-5 text-purple shrink-0 mt-0.5" />
           <p className="text-sm text-muted-foreground">
-            We use cookies to enhance your experience. By continuing to use Vex.ai, you agree to our{" "}
+            We use your browser's storage to keep you signed in, remember your results and count visits anonymously. See our{" "}
             <a href="/privacy" className="text-purple hover:underline">Privacy Policy</a>.
           </p>
         </div>
         <div className="flex gap-2 justify-end">
-          <Button variant="ghost" size="sm" onClick={decline}>
-            Decline
+          <Button variant="ghost" className="h-11" onClick={decline}>
+            Essential only
           </Button>
-          <Button size="sm" onClick={accept}>
-            Accept
+          <Button className="h-11" onClick={accept}>
+            Allow
           </Button>
         </div>
       </div>
