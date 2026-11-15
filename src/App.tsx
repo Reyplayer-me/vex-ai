@@ -17,7 +17,7 @@ import TermsOfService from "./pages/TermsOfService";
 import NotFound from "./pages/NotFound";
 import { trackVisit } from "@/lib/analytics";
 
-// The waitlist is its own light-themed page; load it only when visited.
+// The waitlist is its own page with its own styles; load it only when visited.
 const Waitlist = lazy(() => import("./waitlist/Waitlist"));
 
 const queryClient = new QueryClient();
@@ -61,7 +61,7 @@ const App = () => (
             <Route
               path="/waitlist"
               element={
-                <Suspense fallback={<div className="min-h-screen bg-[#f3f0e8]" />}>
+                <Suspense fallback={<div className="min-h-screen bg-[#09090b]" />}>
                   <Waitlist />
                 </Suspense>
               }

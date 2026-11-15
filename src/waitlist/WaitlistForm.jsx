@@ -76,7 +76,7 @@ export default function WaitlistForm({ id, inputRef }) {
     <div className="wl-form-wrap">
       <form className="wl-form" onSubmit={onSubmit} noValidate>
         <label className="wl-field-label" htmlFor={`${id}-email`}>
-          Email
+          Your email
         </label>
         <div className="wl-form-row">
           <input
@@ -97,7 +97,7 @@ export default function WaitlistForm({ id, inputRef }) {
             aria-describedby={message ? messageId : undefined}
           />
           <button className="wl-btn" type="submit" disabled={status === 'submitting'}>
-            {status === 'submitting' ? 'Adding you…' : 'Join the waitlist'}
+            {status === 'submitting' ? 'Adding you…' : 'Get early access'}
           </button>
         </div>
         <div className="wl-hp" aria-hidden="true">
@@ -109,7 +109,7 @@ export default function WaitlistForm({ id, inputRef }) {
         {message}
         {status === 'submitting' && <span className="wl-sr">Adding you…</span>}
       </p>
-      <p className="wl-note">Free during beta. We’ll email you once when your spot opens. Nothing else.</p>
+      <p className="wl-note">Free during beta. One email when your spot opens. Nothing else.</p>
     </div>
   );
 }

@@ -1,17 +1,17 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import BoardDocument from './BoardDocument';
+import BoardDocument, { EXAMPLES } from './BoardDocument';
 import WaitlistForm from './WaitlistForm';
 import { captureAttribution, track } from './api';
 import { CONTACT_HREF, CONTACT_LABEL } from '../lib/contact';
+import wordmark from '../assets/vex-wordmark.png';
 import './waitlist.css';
-
 
 const TITLE = 'Vex: build it or kill it';
 const DESCRIPTION =
-  'Vex searches the web for real competitors and prices, then five AI advisors argue about your idea and give you a straight answer. You’ll know what to fix before you spend a weekend building it.';
-const FONTS_HREF =
-  'https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap';
+  'Tell us your startup idea. Vex looks up real competitors, prices and rules on the web, then five AI advisors argue about it and give you one straight answer.';
+// Inter and Orbitron come with the app; the board minutes add a typewriter face.
+const FONTS_HREF = 'https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap';
 
 // Sets this page's title, description, preview tags and fonts, and restores the
 // site-wide values on the way out.
@@ -34,7 +34,7 @@ function usePageHead() {
     };
     document.title = TITLE;
     setMeta('name', 'description', DESCRIPTION);
-    setMeta('name', 'theme-color', '#F3F0E8');
+    setMeta('name', 'theme-color', '#09090B');
     setMeta('property', 'og:title', TITLE);
     setMeta('property', 'og:description', DESCRIPTION);
     setMeta('property', 'og:image', `${window.location.origin}/og-waitlist.png`);
@@ -65,18 +65,19 @@ const STEPS = [
   ],
 ];
 
+// Dot colours match the advisor colours in the main Vex app.
 const BOARD = [
-  ['CEO', 'Cuts through the noise. Asks if this is a business.'],
-  ['Execution Officer', 'Finds the smallest thing you can actually ship.'],
-  ['Risk Analyst', 'Finds the assumption that could sink it.'],
-  ['Psychologist', 'Calls out the bias behind your conviction.'],
-  ['Industry Expert', 'Checks what the market already knows.'],
+  ['CEO', 'Cuts through the noise. Asks if this is a business.', '#b57cf5'],
+  ['Execution Officer', 'Finds the smallest thing you can actually ship.', '#5fdce8'],
+  ['Risk Analyst', 'Finds the assumption that could sink it.', '#f9be5c'],
+  ['Psychologist', 'Calls out the bias behind your conviction.', '#f27bb0'],
+  ['Industry Expert', 'Checks what the market already knows.', '#6ce0a6'],
 ];
 
 const LIMITS = [
-  'It won’t invent competitors. Every one comes from a search result, with a link you can check.',
-  'It won’t tell you an idea will succeed. It gives a structured opinion and says how confident it is.',
-  'It won’t share your idea. Reports are private unless you choose to share a summary.',
+  ['Invent competitors.', 'Every one comes from a search result, with a link you can check.'],
+  ['Promise you’ll succeed.', 'It gives a structured opinion and says how confident it is.'],
+  ['Share your idea.', 'Reports are private unless you choose to share a summary.'],
 ];
 
 const FAQS = [
@@ -104,26 +105,7 @@ const FAQS = [
 
 let viewTracked = false;
 
-function Section({ id, number, label, title, children }) {
-  return (
-    <section id={id} className="wl-section" aria-labelledby={`${id}-title`}>
-      <div className="wl-wrap wl-section-grid">
-        <div className="wl-section-head">
-          <p className="wl-label">
-            {number} · {label}
-          </p>
-          <h2 id={`${id}-title`} className="wl-h2">
-            {title}
-          </h2>
-        </div>
-        <div className="wl-section-body">{children}</div>
-      </div>
-    </section>
-  );
-}
-
 export default function Waitlist() {
-  const heroEmailRef = useRef(null);
   usePageHead();
 
   useEffect(() => {
@@ -134,113 +116,159 @@ export default function Waitlist() {
     }
   }, []);
 
-  const focusHeroEmail = () => {
-    const el = heroEmailRef.current;
-    if (!el) return;
-    el.focus({ preventScroll: true });
-    el.scrollIntoView({ block: 'center' });
-  };
-
   return (
     <div className="wl">
       <header className="wl-wrap wl-top">
-        <a className="wl-wordmark" href="/waitlist">
-          Vex
+        <a className="wl-logo" href="#top">
+          <img src={wordmark} alt="Vex" width="486" height="214" />
         </a>
         <nav className="wl-top-nav" aria-label="Page">
           <a className="wl-link" href="#how">
             How it works
           </a>
-          <button type="button" className="wl-btn wl-btn--sm wl-desktop-only" onClick={focusHeroEmail}>
-            Join the waitlist
-          </button>
+          <a className="wl-link" href="#examples">
+            Examples
+          </a>
+          <a className="wl-btn wl-btn--sm" href="#join">
+            Get early access
+          </a>
         </nav>
       </header>
-      <div className="wl-rule wl-rule--draw" />
 
       <main>
-        <section className="wl-wrap wl-hero" aria-labelledby="wl-title">
-          <div className="wl-hero-text">
-            <p className="wl-label">Private beta · waitlist open</p>
+        <section id="top" className="wl-wrap wl-hero" aria-labelledby="wl-title">
+          <div className="wl-hero-text" id="join">
+            <p className="wl-badge">Private beta. Waitlist open.</p>
             <h1 id="wl-title" className="wl-h1">
-              Tell us your startup idea. We’ll tell you whether to build it or <em>kill it</em>.
+              Build it
+              <br />
+              or <em>kill it.</em>
             </h1>
             <p className="wl-sub">
-              Vex searches the web for real competitors and prices, then five AI advisors argue about your idea and
-              give you a straight answer. You’ll know what to fix before you spend a weekend building it.
+              Tell us your startup idea. Vex looks up real competitors, prices and rules on the web, then five AI
+              advisors argue about it and give you one straight answer. Find the flaw before you spend a weekend
+              building.
             </p>
-            <WaitlistForm id="hero" inputRef={heroEmailRef} />
+            <WaitlistForm id="hero" />
           </div>
           <div className="wl-hero-doc">
             <BoardDocument />
           </div>
         </section>
-        <div className="wl-rule wl-rule--draw" />
 
-        <Section id="how" number="01" label="How a verdict works" title="Three steps, about a minute.">
-          <ol className="wl-list">
+        <section id="examples" className="wl-section wl-panel" aria-labelledby="examples-title">
+          <div className="wl-wrap">
+            <div className="wl-section-head">
+              <h2 id="examples-title" className="wl-h2">
+                Three ordinary ideas. Three different answers.
+              </h2>
+              <p>Most ideas aren’t brilliant or doomed. Vex tells you which way yours leans and what to check before you commit.</p>
+            </div>
+            <ul className="wl-grid">
+              {EXAMPLES.map((ex) => (
+                <li key={ex.verdict} className="wl-example">
+                  <p className="wl-label">The idea</p>
+                  <p className="wl-example-idea">{ex.idea}</p>
+                  <p className="wl-example-question">{ex.question}</p>
+                  <p className={`wl-verdict wl-verdict--${ex.verdict.toLowerCase()}`}>
+                    <span className="wl-sr">Verdict: </span>
+                    {ex.verdict}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        <section id="how" className="wl-wrap wl-section wl-steps" aria-labelledby="how-title">
+          <h2 id="how-title" className="wl-h2">
+            About a minute,
+            <br />
+            start to verdict.
+          </h2>
+          <ol className="wl-grid">
             {STEPS.map(([title, text], i) => (
-              <li key={title} className="wl-list-item wl-step">
-                <span className="wl-mono wl-step-num">0{i + 1}</span>
-                <div>
-                  <p className="wl-item-title">{title}</p>
-                  <p className="wl-muted">{text}</p>
-                </div>
+              <li key={title} className="wl-step">
+                <span className="wl-step-num" aria-hidden="true">
+                  0{i + 1}
+                </span>
+                <p className="wl-step-title">{title}</p>
+                <p>{text}</p>
               </li>
             ))}
           </ol>
-          <p className="wl-after-list">
-            You also get the top three risks, the one question you must answer before you build, and what would
-            change the board’s mind.
+          <p className="wl-callout">
+            You also get the top three risks, the one question to answer before you build, and what would change the
+            board’s mind.
           </p>
-        </Section>
-        <div className="wl-rule" />
+        </section>
 
-        <Section id="board" number="02" label="The board" title="Five advisors. They won’t all agree.">
-          <ul className="wl-list">
-            {BOARD.map(([name, line]) => (
-              <li key={name} className="wl-list-item wl-member">
-                <span className="wl-item-title">{name}</span>
-                <span className="wl-muted">{line}</span>
+        <section className="wl-section wl-panel" aria-labelledby="board-title">
+          <div className="wl-wrap wl-split">
+            <div>
+              <h2 id="board-title" className="wl-h2">
+                Five advisors. They won’t all agree.
+              </h2>
+              <p className="wl-split-lead">
+                Each one looks at your idea from a different seat. When they disagree, you see why.
+              </p>
+            </div>
+            <ul className="wl-advisors">
+              {BOARD.map(([name, line, dot]) => (
+                <li key={name}>
+                  <span className="wl-advisor" style={{ '--dot': dot }}>
+                    {name}
+                  </span>
+                  <span>{line}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        <section className="wl-wrap wl-section wl-limits" aria-labelledby="limits-title">
+          <h2 id="limits-title" className="wl-h2">
+            What Vex won’t do.
+          </h2>
+          <ul className="wl-grid">
+            {LIMITS.map(([title, text]) => (
+              <li key={title} className="wl-card">
+                <svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ff5c64" strokeWidth="2.5" strokeLinecap="round">
+                  <path d="M5 5l14 14M19 5L5 19" />
+                </svg>
+                <p className="wl-card-title">
+                  <span className="wl-sr">Vex won’t </span>
+                  {title}
+                </p>
+                <p>{text}</p>
               </li>
             ))}
           </ul>
-        </Section>
-        <div className="wl-rule" />
+        </section>
 
-        <Section id="limits" number="03" label="What Vex won’t do" title="Honest by design.">
-          <ul className="wl-list">
-            {LIMITS.map((line) => (
-              <li key={line} className="wl-list-item">
-                {line}
-              </li>
-            ))}
-          </ul>
-        </Section>
-        <div className="wl-rule" />
-
-        <Section id="questions" number="04" label="Questions" title="Before you join.">
-          <div className="wl-list">
+        <section className="wl-wrap wl-split" style={{ paddingBottom: 'var(--section-space)' }} aria-labelledby="faq-title">
+          <h2 id="faq-title" className="wl-h2">
+            Questions
+          </h2>
+          <div className="wl-faqs">
             {FAQS.map(([q, a]) => (
-              <details key={q} className="wl-list-item wl-faq">
+              <details key={q} className="wl-faq">
                 <summary>
                   <span>{q}</span>
                   <span className="wl-plus" aria-hidden="true" />
                 </summary>
-                <p className="wl-muted">{a}</p>
+                <p>{a}</p>
               </details>
             ))}
           </div>
-        </Section>
+        </section>
 
         <section className="wl-closing" aria-labelledby="wl-closing-title">
-          <div className="wl-wrap wl-section-grid">
-            <div className="wl-section-head">
-              <h2 id="wl-closing-title" className="wl-h2">
-                Find out before you build.
-              </h2>
-            </div>
-            <div className="wl-section-body">
+          <div className="wl-wrap wl-closing-inner">
+            <h2 id="wl-closing-title" className="wl-h2">
+              Find out before you build.
+            </h2>
+            <div className="wl-closing-form">
               <WaitlistForm id="closing" />
             </div>
           </div>
@@ -248,7 +276,9 @@ export default function Waitlist() {
       </main>
 
       <footer className="wl-wrap wl-footer">
-        <span>© Vex 2026</span>
+        <span className="wl-footer-brand">
+          <img src={wordmark} alt="" width="486" height="214" />© Vex 2026
+        </span>
         <nav className="wl-footer-nav" aria-label="Legal">
           <Link className="wl-link" to="/privacy">
             Privacy

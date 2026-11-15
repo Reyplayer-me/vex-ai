@@ -2,22 +2,34 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { track } from './api';
 
-const EXAMPLES = [
+export const EXAMPLES = [
   {
     idea: 'A subscription box of snacks from a different country every month.',
     scores: [6, 5, 3, 2],
+    talk: [
+      ['Risk Analyst', 'Five boxes already ship this. What stops them copying your best idea next month?'],
+      ['CEO', 'Agreed. No edge, no business.'],
+    ],
     question: 'Why would someone pick you over the five boxes already doing this?',
     verdict: 'KILL',
   },
   {
     idea: 'An app that matches dog owners in the same building to share walks.',
     scores: [7, 5, 4, 6],
+    talk: [
+      ['Psychologist', 'People like sharing in theory. It changes when it’s their own dog.'],
+      ['Execution Officer', 'Try one building and a group chat before you build an app.'],
+    ],
     question: 'Will neighbours trust a stranger with their dog, or only people they’ve met?',
     verdict: 'PIVOT',
   },
   {
     idea: 'Bookkeeping for tattoo studios, priced per artist.',
     scores: [8, 7, 5, 7],
+    talk: [
+      ['Industry Expert', 'Studios split money with artists in ways general tools handle badly.'],
+      ['CEO', 'Narrow, but they’d pay. Worth a real test.'],
+    ],
     question: 'Can you get ten studios to show you how they track money today?',
     verdict: 'PROCEED',
   },
@@ -98,10 +110,12 @@ export default function BoardDocument() {
   };
 
   const ex = EXAMPLES[index];
+  const lowest = Math.min(...ex.scores);
   const summary =
     `Example ${index + 1} of ${EXAMPLES.length}. Idea under review: ${ex.idea} ` +
     SCORE_LABELS.map((label, i) => `${label} ${ex.scores[i]} out of 10`).join(', ') +
-    `. The question to answer first: ${ex.question} Verdict: ${ex.verdict.toLowerCase()}.`;
+    `. ${ex.talk.map(([who, line]) => `${who}: ${line}`).join(' ')} ` +
+    `The question to answer first: ${ex.question} Verdict: ${ex.verdict.toLowerCase()}.`;
 
   return (
     <div
@@ -114,36 +128,47 @@ export default function BoardDocument() {
         if (!e.currentTarget.contains(e.relatedTarget)) setFocused(false);
       }}
     >
-      <figure className="wl-doc-figure" aria-live="off" aria-label="Example board minutes">
+      <figure className="wl-doc-tilt" aria-live="off" aria-label="Example board minutes">
         <article
           key={shown}
           className={`wl-doc${shown === 0 ? ' is-first' : ''}${leaving ? ' is-leaving' : ''}`}
         >
           <p className="wl-sr">{summary}</p>
           <div aria-hidden="true">
-            <div className="wl-doc-head wl-mono">
-              <span>Vex board · minutes</span>
+            <div className="wl-doc-head">
+              <span>Minutes of the board</span>
               <span>
                 Example {index + 1} of {EXAMPLES.length}
               </span>
             </div>
-            <div className="wl-rule wl-rule--draw" />
             <div className="wl-doc-body">
-              <p className="wl-label">Idea under review</p>
-              <p className="wl-doc-idea">“{ex.idea}”</p>
+              <p className="wl-doc-kicker">Idea under review:</p>
+              <p className="wl-doc-idea">{ex.idea}</p>
               <ul className="wl-scores">
                 {SCORE_LABELS.map((label, i) => (
-                  <li key={label} className="wl-score" style={{ '--i': i }}>
-                    <span className="wl-mono">{label}</span>
+                  <li
+                    key={label}
+                    className={`wl-score${ex.scores[i] === lowest ? ' is-low' : ''}`}
+                    style={{ '--i': i }}
+                  >
+                    <span>{label}</span>
                     <span className="wl-bar">
                       <span className="wl-bar-fill" style={{ '--v': ex.scores[i] / 10 }} />
                     </span>
-                    <span className="wl-mono wl-score-num">{ex.scores[i]}/10</span>
+                    <span className="wl-score-num">{ex.scores[i]}/10</span>
                   </li>
                 ))}
               </ul>
-              <p className="wl-label">The question to answer first</p>
-              <p className="wl-doc-question">{ex.question}</p>
+              <div className="wl-doc-talk">
+                {ex.talk.map(([who, line]) => (
+                  <p key={who}>
+                    <strong>{who}:</strong> {line}
+                  </p>
+                ))}
+                <p className="wl-doc-question">
+                  <strong>Answer this first:</strong> {ex.question}
+                </p>
+              </div>
             </div>
           </div>
           <div className={`wl-stamp wl-stamp--${ex.verdict.toLowerCase()}`} aria-hidden="true">
@@ -152,9 +177,9 @@ export default function BoardDocument() {
         </article>
       </figure>
       <div className="wl-doc-foot">
-        <p className="wl-doc-caption">
+        <p>
           Illustrative examples. Your report uses live web results.{' '}
-          <Link className="wl-link" to="/sample">
+          <Link className="wl-inline-link" to="/sample">
             See a real sample report
           </Link>
         </p>
