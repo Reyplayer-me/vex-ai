@@ -12,6 +12,8 @@ const buttonVariants = cva("inline-flex items-center justify-center gap-2 whites
       ghost: "text-foreground hover:bg-accent hover:text-accent-foreground",
       link: "text-foreground underline-offset-4 hover:underline",
       hero: "bg-purple text-accent-foreground hover:bg-purple/90 shadow-lg",
+      cta: "bg-cta text-cta-foreground hover:bg-cta/90",
+      google: "border border-google-border bg-google-background text-google-foreground hover:bg-google-background/80",
       heroOutline: "border border-border bg-transparent text-foreground hover:bg-accent"
     },
     size: {

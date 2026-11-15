@@ -14,6 +14,14 @@ export default {
   	},
   	extend: {
   		colors: {
+            cta: { DEFAULT: 'hsl(var(--cta))', foreground: 'hsl(var(--cta-foreground))' },
+            'advisor-execution': 'hsl(var(--advisor-execution))',
+            'advisor-risk': 'hsl(var(--advisor-risk))',
+            'advisor-psychologist': 'hsl(var(--advisor-psychologist))',
+            'advisor-industry': 'hsl(var(--advisor-industry))',
+            'google-background': 'hsl(var(--google-background))',
+            'google-border': 'hsl(var(--google-border))',
+            'google-foreground': 'hsl(var(--google-foreground))',
   			border: 'hsl(var(--border))',
   			input: 'hsl(var(--input))',
   			ring: 'hsl(var(--ring))',
@@ -119,7 +127,7 @@ export default {
 		},
 		fontFamily: {
 			sans: [
-				'Inter',
+				'Orbitron',
 				'ui-sans-serif',
 				'system-ui',
 				'sans-serif'

@@ -8,27 +8,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { Mail, Lock, ArrowRight, Eye, EyeOff, CheckCircle } from "lucide-react";
 import { z } from "zod";
 import vexWordmark from "@/assets/vex-wordmark.png";
+import { lovable } from "@/integrations/lovable/index";
+import { GoogleLogo } from "@/components/GoogleLogo";
+import { authSchema } from "@/lib/auth-validation";
 
-const ALLOWED_DOMAINS = ["gmail.com", "yahoo.com", "outlook.com"];
-
-const authSchema = z.object({
-  email: z
-    .string()
-    .trim()
-    .email({ message: "Invalid email address" })
-    .max(255, { message: "Email must be less than 255 characters" })
-    .refine(
-      (email) => {
-        const domain = email.split("@")[1]?.toLowerCase();
-        return ALLOWED_DOMAINS.includes(domain);
-      },
-      { message: "Only Gmail, Yahoo, and Outlook emails are allowed" }
-    ),
-  password: z
-    .string()
-    .min(6, { message: "Password must be at least 6 characters" })
-    .max(100, { message: "Password must be less than 100 characters" }),
-});
 
 const Auth = () => {
   const [searchParams] = useSearchParams();
@@ -48,14 +31,14 @@ const Auth = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         if (session?.user) {
-          navigate("/onboarding");
+          navigate(sessionStorage.getItem("vex-auth-next") || "/onboarding");
         }
       }
     );
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
-        navigate("/onboarding");
+        navigate(sessionStorage.getItem("vex-auth-next") || "/onboarding");
       }
     });
 
@@ -100,7 +83,7 @@ const Auth = () => {
           } else {
             toast({
               title: "Login failed",
-              description: error.message,
+                description: "We couldn't sign you in. Please try again shortly.",
               variant: "destructive",
             });
           }
@@ -112,7 +95,7 @@ const Auth = () => {
           description: "Redirecting to your workspace...",
         });
       } else {
-        const redirectUrl = `${window.location.origin}/onboarding`;
+        const redirectUrl = `${window.location.origin}/auth`;
 
         const { data, error } = await supabase.auth.signUp({
           email: email.trim(),
@@ -132,7 +115,7 @@ const Auth = () => {
           } else {
             toast({
               title: "Signup failed",
-              description: error.message,
+              description: "We couldn't create your account. Please try again shortly.",
               variant: "destructive",
             });
           }
@@ -155,10 +138,10 @@ const Auth = () => {
           description: "Please check your inbox and click the verification link.",
         });
       }
-    } catch (error: any) {
+    } catch {
       toast({
         title: "An error occurred",
-        description: error.message || "Please try again later.",
+        description: "Please try again later. Your details have not been lost.",
         variant: "destructive",
       });
     } finally {
@@ -248,6 +231,14 @@ const Auth = () => {
             </p>
           </div>
 
+          <Button variant="google" size="lg" className="mb-6 w-full px-3 text-sm" disabled={loading} onClick={async () => {
+            setLoading(true);
+            try {
+              const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: `${window.location.origin}/auth` });
+              if (result.error) toast({ title: "Google sign-in didn't finish", description: "Please try again or continue with email.", variant: "destructive" });
+            } catch { toast({ title: "Google sign-in didn't finish", description: "Please try again or continue with email.", variant: "destructive" }); }
+            finally { setLoading(false); }
+          }}><GoogleLogo />Continue with Google</Button>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -256,15 +247,12 @@ const Auth = () => {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="you@gmail.com"
+                  placeholder="you@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="pl-10 transition-all duration-300 focus:border-purple focus:ring-purple"
                 />
               </div>
-              <p className="text-xs text-muted-foreground">
-                Only Gmail, Yahoo, and Outlook emails are accepted
-              </p>
             </div>
 
             <div className="space-y-2">
@@ -295,7 +283,8 @@ const Auth = () => {
 
             <Button
               type="submit"
-              className="w-full bg-purple hover:bg-purple/90 text-accent-foreground glow-purple-sm hover:glow-purple transition-all duration-300"
+              variant="cta"
+              className="w-full"
               size="lg"
               disabled={loading}
             >
