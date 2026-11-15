@@ -1,8 +1,7 @@
 import { Link } from "react-router-dom";
 import vexWordmark from "@/assets/vex-wordmark.png";
 
-// Set VITE_CONTACT_EMAIL to publish a contact address; until then Contact opens the privacy page section.
-export const CONTACT_EMAIL: string | undefined = import.meta.env.VITE_CONTACT_EMAIL;
+import { CONTACT_HREF, CONTACT_LABEL } from "@/lib/contact";
 
 const Footer = () => {
   return (
@@ -19,7 +18,7 @@ const Footer = () => {
           <Link to="/terms" className="inline-flex min-h-[44px] items-center px-3 text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
             Terms
           </Link>
-          <a href={CONTACT_EMAIL ? `mailto:${CONTACT_EMAIL}` : "/privacy#contact"} className="inline-flex min-h-[44px] items-center px-3 text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
+          <a href={CONTACT_HREF} title={CONTACT_LABEL} className="inline-flex min-h-[44px] items-center px-3 text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
             Contact
           </a>
         </nav>

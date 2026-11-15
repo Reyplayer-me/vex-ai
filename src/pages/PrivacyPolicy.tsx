@@ -1,5 +1,5 @@
 import { LegalPage } from "@/components/landing/LegalPage";
-import { CONTACT_EMAIL } from "@/components/landing/Footer";
+import { CONTACT_HREF, CONTACT_LABEL } from "@/lib/contact";
 
 const PrivacyPolicy = () => (
   <LegalPage title="Privacy Policy" updated="15 November 2026">
@@ -54,13 +54,9 @@ const PrivacyPolicy = () => (
     </ul>
 
     <h2 id="contact">Contact</h2>
-    {CONTACT_EMAIL ? (
-      <p>
-        Questions or requests about your data: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
-      </p>
-    ) : (
-      <p>A contact email address is coming soon. Until then, you can delete your data yourself from the My ideas page.</p>
-    )}
+    <p>
+      Questions or requests about your data, including deleting your waitlist signup: <a href={CONTACT_HREF}>{CONTACT_LABEL}</a>.
+    </p>
   </LegalPage>
 );
 

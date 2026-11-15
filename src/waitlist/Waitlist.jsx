@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom';
 import BoardDocument from './BoardDocument';
 import WaitlistForm from './WaitlistForm';
 import { captureAttribution, track } from './api';
+import { CONTACT_HREF, CONTACT_LABEL } from '../lib/contact';
 import './waitlist.css';
 
-const SUPPORT_EMAIL = import.meta.env.VITE_CONTACT_EMAIL;
 
 const TITLE = 'Vex: build it or kill it';
 const DESCRIPTION =
@@ -256,7 +256,7 @@ export default function Waitlist() {
           <Link className="wl-link" to="/terms">
             Terms
           </Link>
-          <a className="wl-link" href={SUPPORT_EMAIL ? `mailto:${SUPPORT_EMAIL}` : '/privacy#contact'}>
+          <a className="wl-link" href={CONTACT_HREF} title={CONTACT_LABEL}>
             Contact
           </a>
         </nav>

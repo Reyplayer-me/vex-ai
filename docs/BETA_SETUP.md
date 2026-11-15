@@ -58,8 +58,8 @@ It deletes unclaimed free runs after 30 days (as the privacy page promises) and 
 check-ins to people who opted in.
 
 ## 7. Optional
-- **Contact email:** set `VITE_CONTACT_EMAIL` to show a contact address in the app and waitlist
-  footers and the privacy page. Until then, Contact links to the privacy page.
+- **Contact email:** set in `src/lib/contact.ts`. Visitors see "support@vex"; the link opens an email
+  to the inbox address there.
 - **Waitlist mock:** for local development only, `VITE_WAITLIST_MOCK=true` in `.env.development.local`
   fakes the waitlist backend. An email ending in `@fail.test` then shows the server-error state.
 - **"Edit with Lovable" badge:** Project settings → hide badge (paid plans only). It's not in the code.
