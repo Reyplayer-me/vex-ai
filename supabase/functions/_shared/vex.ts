@@ -1,5 +1,6 @@
 // Shared helpers for Vex edge functions: CORS, friendly errors, AI calls,
 // web search and hashing. Never put idea text in logs.
+/* eslint-disable @typescript-eslint/no-explicit-any -- request bodies and AI output are untyped JSON; every field is checked before use */
 import { createClient, type SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 export const corsHeaders = {
@@ -105,6 +106,7 @@ export function clientIp(req: Request) {
 /** Removes anything that could close our data delimiters and control characters. */
 export function asData(text: string) {
   return text
+    // eslint-disable-next-line no-control-regex -- stripping control characters is the point
     .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, " ")
     .replace(/<\/?\s*(founder_idea|audience|search_results|result|instructions)[^>]*>/gi, " ")
     .trim();

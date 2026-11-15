@@ -1,5 +1,6 @@
 // Full report for a signed-in owner: boardroom debate, roadmap, build plan and
 // launch plan, generated once per idea and saved. Limited per account per day.
+/* eslint-disable @typescript-eslint/no-explicit-any -- request bodies and AI output are untyped JSON; every field is checked before use */
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import {
   aiToolCall, asData, cleanList, cleanText, corsHeaders, DATA_RULE, fail, getUser, json, serviceClient, VexError,

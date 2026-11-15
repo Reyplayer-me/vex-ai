@@ -4,6 +4,7 @@
 //   claim           - signed in: attach anonymous ideas (by token or verified email)
 //   share / unshare - opt-in public summary at /r/:shareId
 //   delete_my_data  - signed in: delete the account and everything owned by it
+/* eslint-disable @typescript-eslint/no-explicit-any -- request bodies and AI output are untyped JSON; every field is checked before use */
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { corsHeaders, fail, getUser, json, randomToken, serviceClient, sha256 } from "../_shared/vex.ts";
 
