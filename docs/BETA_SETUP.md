@@ -31,10 +31,18 @@ must run after the migration above, because its admin stats use the admin role.
 - Email sign-in links (magic links) must be enabled. They are on by default.
 
 ## 4. Make yourself an admin
-After signing in once, run in the SQL editor (replace the email):
+Apply `supabase/migrations/20261115140000_owner_admin.sql`. It makes rshalm20@gmail.com an admin
+automatically once that address is verified. Then:
+1. Go to `/auth?mode=signup`, sign up with rshalm20@gmail.com and your password (or use Continue with
+   Google with that Gmail account).
+2. Click the link in the verification email.
+3. Sign in. My ideas now shows an **Admin dashboard** button.
+
+Admin is a role on the account, not a separate password: every admin page and action checks it in
+the database. To add another admin later, run in the SQL editor (replace the email):
 ```sql
 insert into public.user_roles (user_id, role)
-select id, 'admin' from auth.users where email = 'YOUR_EMAIL' on conflict do nothing;
+select id, 'admin' from auth.users where email = 'OTHER_EMAIL' on conflict do nothing;
 ```
 Then open `/admin` for the funnel and the waitlist stats (total signups, and views → signups by
 `utm_source`). Use links like `https://vex-ai.lovable.app/waitlist?utm_source=tiktok` so each

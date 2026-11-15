@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { format } from "date-fns";
-import { ChevronRight, Loader2, LogOut, Plus } from "lucide-react";
+import { ChevronRight, Loader2, LogOut, Plus, Shield } from "lucide-react";
 import Header from "@/components/landing/Header";
 import Footer from "@/components/landing/Footer";
 import { Button } from "@/components/ui/button";
@@ -31,6 +31,7 @@ const MyIdeas = () => {
   const [rows, setRows] = useState<Row[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [weekly, setWeekly] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [weeklyError, setWeeklyError] = useState<string | null>(null);
   const [confirmText, setConfirmText] = useState("");
   const [deleting, setDeleting] = useState(false);
@@ -48,10 +49,13 @@ const MyIdeas = () => {
     } catch {
       /* claiming is best-effort; saved ideas still load */
     }
-    const [ideas, profile] = await Promise.all([
+    const [ideas, profile, roles] = await Promise.all([
       db.from("ideas").select("id, idea, verdict, overall_score, created_at, full_report_at").order("created_at", { ascending: false }),
       db.from("profiles").select("weekly_checkin").eq("user_id", data.session.user.id).maybeSingle(),
+      db.from("user_roles").select("role").eq("role", "admin"),
     ]);
+    // Shows the link only; the admin data itself is protected in the database.
+    setIsAdmin(!!roles.data?.length);
     if (ideas.error) setError("We couldn't load your ideas. Please refresh.");
     else setRows(ideas.data);
     setWeekly(!!profile.data?.weekly_checkin);
@@ -147,6 +151,13 @@ const MyIdeas = () => {
           {weeklyError && <p role="alert" className="text-sm text-verdict-kill">{weeklyError}</p>}
 
           <div className="flex flex-col gap-3 border-t border-border pt-6 sm:flex-row">
+            {isAdmin && (
+              <Button asChild variant="outline" className="h-11">
+                <Link to="/admin">
+                  <Shield aria-hidden /> Admin dashboard
+                </Link>
+              </Button>
+            )}
             <Button
               variant="outline"
               className="h-11"
