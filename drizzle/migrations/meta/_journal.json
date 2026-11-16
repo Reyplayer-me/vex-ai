@@ -8,6 +8,20 @@
       "when": 1794737716708,
       "tag": "0000_allow_all_valid_signup_emails",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794854423672,
+      "tag": "0001_vex_verdict_beta",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794854441077,
+      "tag": "0002_waitlist",
+      "breakpoints": true
     }
   ]
 }
