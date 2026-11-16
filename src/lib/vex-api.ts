@@ -7,6 +7,14 @@ const FUNCTIONS_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1`;
 const ANON_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 const GENERIC_ERROR = "Something went wrong on our side. Please try again.";
 
+// A failed fetch means either the visitor is offline or our backend didn't answer
+// (it also shows up this way when a function is missing). Only blame the
+// connection when the browser says it's offline.
+const networkError = () =>
+  navigator.onLine === false
+    ? new VexApiError("network", "You seem to be offline. Check your connection and try again.", true)
+    : new VexApiError("network", "Vex isn't responding right now. Please try again in a few minutes.", true);
+
 export { db };
 
 export class VexApiError extends Error {
@@ -46,7 +54,7 @@ async function callFunction<T>(name: string, payload: unknown): Promise<T> {
   try {
     res = await fetch(`${FUNCTIONS_URL}/${name}`, { method: "POST", headers: await headers(), body: JSON.stringify(payload) });
   } catch {
-    throw new VexApiError("network", "We couldn't reach Vex. Check your connection and try again.", true);
+    throw networkError();
   }
   if (!res.ok) throw await errorFrom(res);
   return res.json();
@@ -72,7 +80,7 @@ async function streamVerdict(idea: string, audience: string, onStage: (s: RunSta
       body: JSON.stringify({ idea, audience, visitorId: getVisitorId() }),
     });
   } catch {
-    throw new VexApiError("network", "We couldn't reach Vex. Check your connection and try again.", true);
+    throw networkError();
   }
   if (!res.ok || !res.body) throw await errorFrom(res);
 
