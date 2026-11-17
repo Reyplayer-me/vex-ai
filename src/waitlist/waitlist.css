@@ -231,7 +231,27 @@ body.wl-body {
   display: none;
 }
 
+.wl-top-nav .wl-link--always {
+  display: inline-flex;
+}
+
 /* Hero */
+
+.wl-notice {
+  margin-bottom: 24px;
+  padding: 14px 16px;
+  border: 1px solid #4a2f73;
+  border-radius: 12px;
+  background: #1a1226;
+  color: #e3d6f8;
+  font-size: 15px;
+  max-width: 540px;
+}
+
+.wl-notice .wl-textbtn {
+  margin-top: 4px;
+  color: var(--lime);
+}
 
 .wl-hero {
   display: flex;

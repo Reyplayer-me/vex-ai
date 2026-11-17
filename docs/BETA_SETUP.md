@@ -48,6 +48,17 @@ Then open `/admin` for the funnel and the waitlist stats (total signups, and vie
 `utm_source`). Use links like `https://vex-ai.lovable.app/waitlist?utm_source=tiktok` so each
 channel shows up separately. Waitlist emails and counts are never shown publicly.
 
+## 4b. Invite-only access
+Apply `supabase/migrations/20261117130000_invite_only_access.sql` and redeploy every edge function
+(they now check access). Until both are done, nobody can run Vex, admins included, because the
+functions refuse when the access check is missing.
+
+Only admins and people whose email you approve can run ideas. Everyone else who opens `/` or
+`/ideas` is sent to `/waitlist`. Approve people on `/admin` under "Who can use Vex": approve someone
+from the waitlist, or type any email to let them in directly. Approving sends no email, so tell
+them yourself. They sign in with that same email, and it must be verified. Shared verdict links
+(`/r/...`), `/sample`, `/privacy` and `/terms` stay public.
+
 ## 5. Generate the sample report
 On `/admin`, use "Generate and publish sample" with a made-up idea. It runs the real pipeline and
 publishes the result at `/sample`. Until you do, `/sample` tells visitors to run their own idea.

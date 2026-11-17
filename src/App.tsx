@@ -16,6 +16,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import NotFound from "./pages/NotFound";
 import { trackVisit } from "@/lib/analytics";
+import { RequireAccess } from "@/components/RequireAccess";
 
 // The waitlist is its own page with its own styles; load it only when visited.
 const Waitlist = lazy(() => import("./waitlist/Waitlist"));
@@ -49,10 +50,10 @@ const App = () => (
         <BrowserRouter>
           <RouteEffects />
           <Routes>
-            <Route path="/" element={<Index />} />
+            <Route path="/" element={<RequireAccess><Index /></RequireAccess>} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/idea/:id" element={<IdeaPage />} />
-            <Route path="/ideas" element={<MyIdeas />} />
+            <Route path="/ideas" element={<RequireAccess><MyIdeas /></RequireAccess>} />
             <Route path="/r/:id" element={<PublicVerdict />} />
             <Route path="/sample" element={<SampleReport />} />
             <Route path="/admin" element={<Admin />} />

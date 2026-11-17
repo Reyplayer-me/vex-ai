@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import Header from "@/components/landing/Header";
@@ -117,6 +117,151 @@ const WaitlistStats = ({ days }: { days: number }) => {
             Source comes from utm_source on the link (for example ?utm_source=tiktok). Duplicate signups aren't counted as signups.
           </p>
         </>
+      )}
+    </section>
+  );
+};
+
+interface AccessRow {
+  email: string;
+  created_at: string;
+  utm_source: string | null;
+  idea_note: string | null;
+  approved_at: string | null;
+}
+
+const ACCESS_FILTERS = [
+  { id: "pending", label: "Waiting" },
+  { id: "approved", label: "Approved" },
+  { id: "all", label: "All" },
+] as const;
+
+// Invite-only beta: approve waitlist emails. An approved person signs in with that
+// email (once it's verified) and can use Vex.
+const WaitlistAccess = () => {
+  const [filter, setFilter] = useState<(typeof ACCESS_FILTERS)[number]["id"]>("pending");
+  const [search, setSearch] = useState("");
+  const [rows, setRows] = useState<AccessRow[] | null>(null);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [newEmail, setNewEmail] = useState("");
+  const [log, setLog] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    const { data, error } = await db.rpc("admin_waitlist_entries", { _status: filter, _search: search.trim() });
+    if (error) {
+      setLog("Couldn't load the waitlist. Has the invite-only migration been applied?");
+      setRows([]);
+      return;
+    }
+    setRows(data ?? []);
+  }, [filter, search]);
+
+  useEffect(() => {
+    const t = setTimeout(load, 250);
+    return () => clearTimeout(t);
+  }, [load]);
+
+  const setAccess = async (email: string, approved: boolean) => {
+    setBusy(email);
+    setLog(null);
+    const { error } = await db.rpc("admin_set_access", { _email: email, _approved: approved });
+    setBusy(null);
+    if (error) {
+      setLog(error.message.includes("invalid email") ? "That email doesn't look right." : "That didn't work. Please try again.");
+      return false;
+    }
+    setLog(approved ? `${email} can now use Vex once they sign in with that email.` : `${email} no longer has access.`);
+    load();
+    return true;
+  };
+
+  const addEmail = async (e: FormEvent) => {
+    e.preventDefault();
+    const email = newEmail.trim().toLowerCase();
+    if (!email) return;
+    if (await setAccess(email, true)) setNewEmail("");
+  };
+
+  return (
+    <section className="mt-10">
+      <h2 className="mb-1 font-sans text-lg font-semibold text-foreground">Who can use Vex</h2>
+      <p className="mb-4 text-sm text-muted-foreground">
+        Vex is invite-only. Approve an email and that person can run ideas after signing in with it. Approving doesn't
+        send an email, so let them know yourself.
+      </p>
+
+      <form onSubmit={addEmail} className="mb-5 flex flex-wrap gap-2">
+        <label htmlFor="approve-email" className="sr-only">Email to approve</label>
+        <Input
+          id="approve-email"
+          type="email"
+          inputMode="email"
+          autoComplete="off"
+          value={newEmail}
+          onChange={(e) => setNewEmail(e.target.value)}
+          placeholder="Approve any email directly"
+          className="h-11 min-w-0 flex-1 basis-56 text-base"
+        />
+        <Button type="submit" variant="cta" className="h-11" disabled={!newEmail.trim() || busy !== null}>
+          Approve
+        </Button>
+      </form>
+
+      <div className="mb-3 flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap gap-2" role="group" aria-label="Show">
+          {ACCESS_FILTERS.map((f) => (
+            <Button
+              key={f.id}
+              variant="outline"
+              aria-pressed={filter === f.id}
+              onClick={() => setFilter(f.id)}
+              className={cn("h-11", filter === f.id && "border-purple bg-purple/20")}
+            >
+              {f.label}
+            </Button>
+          ))}
+        </div>
+        <label htmlFor="access-search" className="sr-only">Search emails</label>
+        <Input
+          id="access-search"
+          type="search"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search emails"
+          className="h-11 min-w-0 flex-1 basis-48 text-base"
+        />
+      </div>
+
+      {log && <p className="mb-3 text-sm text-foreground" role="status">{log}</p>}
+
+      {rows === null && <Loader2 className="h-5 w-5 animate-spin text-purple" aria-label="Loading" />}
+      {rows && rows.length === 0 && <p className="text-sm text-muted-foreground">No one here yet.</p>}
+      {rows && rows.length > 0 && (
+        <ul className="divide-y divide-border rounded-xl border border-border">
+          {rows.map((r) => (
+            <li key={r.email} className="flex flex-wrap items-center gap-3 p-3">
+              <div className="min-w-0 flex-1 basis-56">
+                <p className="break-all text-sm font-medium text-foreground">{r.email}</p>
+                <p className="text-xs text-muted-foreground">
+                  Joined {new Date(r.created_at).toLocaleDateString()}
+                  {r.utm_source ? ` · ${r.utm_source}` : ""}
+                  {r.approved_at ? ` · approved ${new Date(r.approved_at).toLocaleDateString()}` : ""}
+                </p>
+                {r.idea_note && <p className="mt-1 text-sm text-muted-foreground">“{r.idea_note}”</p>}
+              </div>
+              <Button
+                size="sm"
+                variant={r.approved_at ? "outline" : "cta"}
+                onClick={() => setAccess(r.email, !r.approved_at)}
+                disabled={busy === r.email}
+                className="h-10 shrink-0"
+              >
+                {busy === r.email && <Loader2 className="animate-spin" aria-hidden />}
+                {r.approved_at ? "Remove access" : "Approve"}
+              </Button>
+            </li>
+          ))}
+        </ul>
       )}
     </section>
   );
@@ -348,6 +493,8 @@ const Admin = () => {
                 ))}
               </ul>
             </section>
+
+            <WaitlistAccess />
 
             <WaitlistStats days={days} />
 

@@ -14,6 +14,7 @@ export type ErrorCode =
   | "rejected_input"
   | "rate_limited"
   | "unauthorized"
+  | "no_access"
   | "not_found"
   | "busy"
   | "internal";
@@ -23,6 +24,7 @@ const FRIENDLY: Record<ErrorCode, string> = {
   rejected_input: "We couldn't read that as a startup idea. Describe what you want to build and who it's for.",
   rate_limited: "You've used today's free runs.",
   unauthorized: "Please sign in to continue.",
+  no_access: "Vex is invite-only right now. Join the waitlist, or sign in with the email we approved.",
   not_found: "We couldn't find that idea.",
   busy: "The board is busy right now. Please try again in a minute.",
   internal: "Something went wrong on our side. Please try again.",
@@ -33,6 +35,7 @@ const STATUS: Record<ErrorCode, number> = {
   rejected_input: 422,
   rate_limited: 429,
   unauthorized: 401,
+  no_access: 403,
   not_found: 404,
   busy: 503,
   internal: 500,
@@ -78,6 +81,16 @@ export async function getUser(req: Request) {
   const { data, error } = await client.auth.getUser(token);
   if (error || !data?.user) return null;
   return data.user;
+}
+
+/** Invite-only beta: true for admins and approved, verified waitlist emails (see has_app_access). */
+export async function hasAccess(db: SupabaseClient, userId: string) {
+  const { data, error } = await db.rpc("has_app_access", { _user_id: userId });
+  if (error) {
+    console.error("has_app_access failed", error.message);
+    return false;
+  }
+  return data === true;
 }
 
 export async function sha256(input: string) {

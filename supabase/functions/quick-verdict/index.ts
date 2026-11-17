@@ -4,7 +4,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import {
   aiToolCall, asData, cleanText, clientIp, corsHeaders, DATA_RULE, fail,
-  friendly, getUser, randomToken, salt, type SearchResult, serviceClient, sha256, VexError, webSearch,
+  friendly, getUser, hasAccess, randomToken, salt, type SearchResult, serviceClient, sha256, VexError, webSearch,
 } from "../_shared/vex.ts";
 import { buildResult, precheck } from "../_shared/verdict-rules.ts";
 
@@ -126,6 +126,8 @@ serve(async (req) => {
 
   const db = serviceClient();
   const user = await getUser(req);
+  // Invite-only beta: only admins and approved waitlist emails can run Vex.
+  if (!user || !(await hasAccess(db, user.id))) return fail("no_access");
   const ipHash = await sha256(`${salt()}|ip|${clientIp(req)}`);
   const limitKeys = user
     ? [`u:${user.id}`]

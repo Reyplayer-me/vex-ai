@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import BoardDocument, { EXAMPLES } from './BoardDocument';
 import WaitlistForm from './WaitlistForm';
 import { captureAttribution, track } from './api';
 import { CONTACT_HREF, CONTACT_LABEL } from '../lib/contact';
+import { supabase } from '../integrations/supabase/client';
 import wordmark from '../assets/vex-wordmark.png';
 import './waitlist.css';
 
@@ -107,6 +108,15 @@ let viewTracked = false;
 
 export default function Waitlist() {
   usePageHead();
+  const navigate = useNavigate();
+  // Set by the app's access gate when a signed-in email hasn't been approved yet.
+  const [params] = useSearchParams();
+  const pending = params.get('pending') === '1';
+
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    navigate('/waitlist', { replace: true });
+  };
 
   useEffect(() => {
     captureAttribution();
@@ -123,6 +133,9 @@ export default function Waitlist() {
           <img src={wordmark} alt="Vex" width="486" height="214" />
         </a>
         <nav className="wl-top-nav" aria-label="Page">
+          <Link className="wl-link wl-link--always" to="/auth?mode=login&next=/">
+            Sign in
+          </Link>
           <a className="wl-link" href="#how">
             How it works
           </a>
@@ -138,7 +151,18 @@ export default function Waitlist() {
       <main>
         <section id="top" className="wl-wrap wl-hero" aria-labelledby="wl-title">
           <div className="wl-hero-text" id="join">
-            <p className="wl-badge">Private beta. Waitlist open.</p>
+            {pending && (
+              <div className="wl-notice" role="status">
+                <p>
+                  You’re signed in, but this email hasn’t been let in yet. If you haven’t joined the list, add the
+                  same email below and we’ll email you when your spot opens.
+                </p>
+                <button type="button" className="wl-textbtn" onClick={signOut}>
+                  Sign out
+                </button>
+              </div>
+            )}
+            <p className="wl-badge">Private beta. Invite only.</p>
             <h1 id="wl-title" className="wl-h1">
               Build it
               <br />

@@ -34,7 +34,7 @@ async function headers() {
 
 // Codes our functions return with a user-facing message. Anything else (gateway
 // or platform errors) gets the generic message so raw technical text never shows.
-const KNOWN_CODES = new Set(["invalid_input", "rejected_input", "rate_limited", "unauthorized", "not_found", "busy", "internal"]);
+const KNOWN_CODES = new Set(["invalid_input", "rejected_input", "rate_limited", "unauthorized", "no_access", "not_found", "busy", "internal"]);
 
 async function errorFrom(res: Response) {
   try {

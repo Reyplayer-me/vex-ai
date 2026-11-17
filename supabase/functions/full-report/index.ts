@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any -- request bodies and AI output are untyped JSON; every field is checked before use */
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import {
-  aiToolCall, asData, cleanList, cleanText, corsHeaders, DATA_RULE, fail, getUser, json, serviceClient, VexError,
+  aiToolCall, asData, cleanList, cleanText, corsHeaders, DATA_RULE, fail, getUser, hasAccess, json, serviceClient, VexError,
 } from "../_shared/vex.ts";
 
 const DAILY_FULL_REPORTS = 3;
@@ -235,6 +235,7 @@ serve(async (req) => {
   if (!/^[0-9a-f-]{36}$/i.test(ideaId)) return fail("invalid_input");
 
   const db = serviceClient();
+  if (!(await hasAccess(db, user.id))) return fail("no_access");
   const { data: idea } = await db.from("ideas").select("*").eq("id", ideaId).eq("user_id", user.id).maybeSingle();
   if (!idea) return fail("not_found");
   if (idea.full_report) return json({ report: idea.full_report, technical: idea.technical_founder, reused: true });
