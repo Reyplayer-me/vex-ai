@@ -533,10 +533,7 @@ export type Database = {
         Returns: boolean
       }
       refund_rate_limit: { Args: { _keys: string[] }; Returns: undefined }
-      set_sample_idea: {
-        Args: { _idea_id: string; _on?: boolean }
-        Returns: undefined
-      }
+      set_sample_idea: { Args: { _idea_id: string }; Returns: undefined }
     }
     Enums: {
       app_role: "admin"
