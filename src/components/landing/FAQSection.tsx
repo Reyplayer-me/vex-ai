@@ -5,7 +5,7 @@ const faqs = [
   {
     question: "How does Vex score ideas?",
     answer:
-      "First we search the web for products that already do what you describe, what they charge, and any regulations that might apply. Then an AI model, acting as a board of five advisors, scores your idea from 0 to 10 on problem clarity, market demand, execution difficulty and differentiation, using those search results as evidence. The overall score and the PROCEED, PIVOT or KILL verdict come from the same pass. Every result shows a confidence level so you know how much evidence it rests on.",
+      "First we search the web for products that already do what you describe, what they charge, and any regulations that might apply. Then an AI model, acting as a board of five advisors, scores your idea from 0 to 10 on problem clarity, market demand, execution difficulty and differentiation, using those search results as evidence. The overall score is a fixed weighting of those four scores, and it sets the verdict: 6.5 or more is PROCEED, under 4 is KILL, and anything in between is PIVOT. A crowded market alone never means KILL; that is reserved for low scores or a fatal flaw, such as an idea that is illegal or that nobody needs. Every result shows a confidence level so you know how much evidence it rests on.",
   },
   {
     question: "Where do the competitors come from?",

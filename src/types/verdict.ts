@@ -14,6 +14,7 @@ export const quickVerdictSchema = z.object({
   one_liner: z.string().min(1),
   top_risks: z.array(z.string()).min(1).max(3),
   killer_question: z.string().min(1),
+  fatal_flaw: z.string().nullable().optional(),
   competitors: z
     .array(
       z.object({

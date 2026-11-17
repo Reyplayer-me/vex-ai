@@ -24,9 +24,26 @@ const lowerConfidence = (c: Confidence, cap: Confidence): Confidence => {
   return order[Math.min(order.indexOf(c), order.indexOf(cap))];
 };
 
+// The overall score and verdict are computed here, not by the model: left to
+// itself the model scored the parts fairly and then gave a much harsher total.
+const WEIGHTS = { market_demand: 0.3, problem_clarity: 0.25, differentiation: 0.25, ease: 0.2 };
+export const PROCEED_AT = 6.5;
+export const KILL_BELOW = 4;
+const FATAL_CAP = 3.9;
+
+export function scoreIdea(scores: Record<"problem_clarity" | "market_demand" | "execution_difficulty" | "differentiation", number>, fatalFlaw: string | null) {
+  const weighted =
+    WEIGHTS.market_demand * scores.market_demand +
+    WEIGHTS.problem_clarity * scores.problem_clarity +
+    WEIGHTS.differentiation * scores.differentiation +
+    WEIGHTS.ease * (10 - scores.execution_difficulty);
+  let overall = Math.round(weighted * 10) / 10;
+  if (fatalFlaw) overall = Math.min(overall, FATAL_CAP);
+  const verdict: Verdict = overall >= PROCEED_AT && !fatalFlaw ? "PROCEED" : overall < KILL_BELOW ? "KILL" : "PIVOT";
+  return { overall, verdict };
+}
+
 export function buildResult(raw: any, sources: SearchResult[], searchOk: boolean) {
-  const verdict = ["PROCEED", "PIVOT", "KILL"].includes(raw?.verdict) ? (raw.verdict as Verdict) : null;
-  const overall = clampScore(raw?.overall_score);
   const s = raw?.scores ?? {};
   const scores = {
     problem_clarity: clampScore(s.problem_clarity),
@@ -37,9 +54,11 @@ export function buildResult(raw: any, sources: SearchResult[], searchOk: boolean
   const oneLiner = cleanText(raw?.one_liner, 200);
   const risks = cleanList(raw?.top_risks, 3, 300);
   const killer = cleanText(raw?.killer_question, 300);
-  if (!verdict || overall === null || Object.values(scores).some((v) => v === null) || !oneLiner || risks.length < 3 || !killer) {
+  if (Object.values(scores).some((v) => v === null) || !oneLiner || risks.length < 3 || !killer) {
     throw new VexError("internal", "verdict failed validation");
   }
+  const fatalFlaw = cleanText(raw?.fatal_flaw, 300);
+  const { overall, verdict } = scoreIdea(scores as Record<keyof typeof scores, number>, fatalFlaw);
 
   const byId = new Map(sources.map((r) => [r.id, r]));
   const seenHosts = new Set<string>();
@@ -79,6 +98,7 @@ export function buildResult(raw: any, sources: SearchResult[], searchOk: boolean
     one_liner: oneLiner,
     top_risks: risks,
     killer_question: killer,
+    fatal_flaw: fatalFlaw,
     competitors,
     competitors_status: !searchOk ? "unverified" : competitors.length ? "verified" : "none_found",
     regulatory_flags: cleanList(raw?.regulatory_flags, 4, 240),

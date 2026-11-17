@@ -23,3 +23,11 @@ When it's done, confirm that each function answers at `/functions/v1/<name>` and
 Paste this into Lovable:
 
 Please run the new SQL migration `supabase/migrations/20261117120000_sample_rotation.sql` against the database exactly as written, then regenerate the Supabase types. Don't change any app code. It lets several sample reports be published at once: `set_sample_idea` gets an optional `_on` argument and no longer unpublishes the others, and `get_sample_report` returns every published sample.
+
+---
+
+## Update: fairer verdicts (17 Nov 2026)
+
+Paste this into Lovable:
+
+Please redeploy the `quick-verdict` edge function from `supabase/functions/quick-verdict` (it uses the updated shared file `supabase/functions/_shared/verdict-rules.ts`), with JWT verification off as before. No database changes and no app code changes. The overall score and verdict are now calculated from the four sub-scores instead of being chosen by the model.

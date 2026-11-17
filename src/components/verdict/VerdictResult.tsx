@@ -89,6 +89,12 @@ export const VerdictResult = ({ idea, result }: { idea: string; result: QuickVer
           <span className="text-2xl text-muted-foreground">/10</span>
         </p>
         <p className="mx-auto mt-4 max-w-md text-lg italic text-foreground">{result.one_liner}</p>
+        {result.fatal_flaw && (
+          <p className="mx-auto mt-3 max-w-md text-sm text-foreground">
+            <span className={cn("font-semibold", style.text)}>Fatal flaw: </span>
+            {result.fatal_flaw}
+          </p>
+        )}
         <div className="mt-4">
           <ConfidenceBadge confidence={result.confidence} />
         </div>

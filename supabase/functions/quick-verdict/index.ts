@@ -14,7 +14,7 @@ const ANON_DAILY = 3;
 const ANON_IP_DAILY = 15; // stops resetting the browser id; shared networks still get room
 const USER_DAILY = 10;
 const CACHE_HOURS = 24;
-const PROMPT_VERSION = "v1";
+const PROMPT_VERSION = "v2"; // bump when scoring changes, so cached verdicts aren't reused
 
 
 const SCREEN_SCHEMA = {
@@ -32,8 +32,6 @@ const SCREEN_SCHEMA = {
 const VERDICT_SCHEMA = {
   type: "object",
   properties: {
-    verdict: { type: "string", enum: ["PROCEED", "PIVOT", "KILL"] },
-    overall_score: { type: "number", minimum: 0, maximum: 10 },
     scores: {
       type: "object",
       properties: {
@@ -47,6 +45,10 @@ const VERDICT_SCHEMA = {
     one_liner: { type: "string", description: "one direct sentence, max 140 characters" },
     top_risks: { type: "array", items: { type: "string" }, minItems: 3, maxItems: 3 },
     killer_question: { type: "string" },
+    fatal_flaw: {
+      type: "string",
+      description: "empty string unless the idea has a fatal flaw (see rules); otherwise one sentence naming it",
+    },
     competitors: {
       type: "array",
       maxItems: 3,
@@ -67,12 +69,12 @@ const VERDICT_SCHEMA = {
     confidence: { type: "string", enum: ["low", "medium", "high"] },
   },
   required: [
-    "verdict", "overall_score", "scores", "one_liner", "top_risks", "killer_question",
+    "scores", "one_liner", "top_risks", "killer_question", "fatal_flaw",
     "competitors", "regulatory_flags", "what_would_change_my_mind", "confidence",
   ],
 };
 
-const VERDICT_SYSTEM = `You are the Vex board: CEO, Execution Officer, Risk Analyst, Psychologist (detects founder bias) and Industry Expert. You give first-time founders a brutally honest, evidence-backed verdict on whether to build an idea.
+const VERDICT_SYSTEM = `You are the Vex board: CEO, Execution Officer, Risk Analyst, Psychologist (detects founder bias) and Industry Expert. You give first-time founders an honest, fair, evidence-backed read on whether to build an idea. Honest means naming the real problems; fair means also crediting what is genuinely good. You are not trying to kill ideas or to flatter them.
 
 ${DATA_RULE}
 
@@ -82,15 +84,15 @@ EVIDENCE RULES:
 - If there are no usable results, return an empty competitors list.
 - Regulatory flags should reflect the regulatory search results or widely known law for the domain. Return an empty list if nothing applies.
 
-SCORING (0-10, one decimal allowed):
+SCORING (0-10, one decimal allowed). Score each dimension on its own; the overall score and verdict are calculated from these four, so don't let one weakness drag down the others. Use the whole scale: 5 is average, 7 is good, 9+ is rare.
 - problem_clarity: is there a specific, painful, frequent problem?
-- market_demand: evidence people pay for this today (competitors with revenue are evidence of demand, not only threat).
-- execution_difficulty: 10 = very hard for a first-time founder to build and operate.
-- differentiation: how different it is from what the search found.
-- overall_score weighs all four (high difficulty lowers it).
-- PROCEED: overall >= 6.5 and no fatal risk. KILL: overall < 4 or a fatal flaw (illegal, no market, dominated by free incumbents with no angle). Otherwise PIVOT.
+- market_demand: evidence people pay for this today. Paying competitors are strong evidence of demand (score high), not a reason to score low.
+- execution_difficulty: 10 = very hard for a first-time founder to build and operate. A typical web or mobile app is 4-6.
+- differentiation: how different the idea as described is from what the search found. Existing competitors alone don't make this 0-1; reserve that for a near-identical copy of a dominant product.
 
-TONE: direct, human, specific to this idea. No hype, no motivational language, no invented statistics, no promise of success. The one_liner is a punchy roast or summary a founder would screenshot. The killer_question is the Risk Analyst's single sharpest question the founder must answer before building.
+FATAL FLAW: set fatal_flaw only when the idea cannot work as described: it is illegal, nobody has the problem, it is technically impossible, or it depends on something the founder clearly can't get. A crowded market, strong incumbents, low willingness to pay, or hard execution are risks, not fatal flaws; put them in top_risks. Otherwise return an empty string.
+
+TONE: direct, human, specific to this idea. No hype, no motivational language, no invented statistics, no promise of success. The one_liner is a sharp, honest summary a founder would screenshot: it can sting, but it should point at what would have to be true for this to work, not just mock it. The killer_question is the Risk Analyst's single sharpest question the founder must answer before building. what_would_change_my_mind names the specific angle or evidence that would make this a stronger idea (for a crowded market, the niche or wedge that could work).
 Confidence: high only when the search returned clearly relevant competitors and pricing; low when evidence is thin.`;
 
 function normalise(text: string) {
