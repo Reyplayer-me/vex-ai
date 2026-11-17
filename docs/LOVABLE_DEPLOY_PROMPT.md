@@ -15,3 +15,11 @@ The frontend calls backend functions and tables that aren't deployed yet, so eve
 4. Then regenerate the Supabase types.
 
 When it's done, confirm that each function answers at `/functions/v1/<name>` and that the tables `ideas`, `analytics_events`, `price_intents` and `waitlist` exist.
+
+---
+
+## Update: sample rotation (17 Nov 2026)
+
+Paste this into Lovable:
+
+Please run the new SQL migration `supabase/migrations/20261117120000_sample_rotation.sql` against the database exactly as written, then regenerate the Supabase types. Don't change any app code. It lets several sample reports be published at once: `set_sample_idea` gets an optional `_on` argument and no longer unpublishes the others, and `get_sample_report` returns every published sample.

@@ -122,11 +122,50 @@ const WaitlistStats = ({ days }: { days: number }) => {
   );
 };
 
+interface SampleRow {
+  id: string;
+  idea: string;
+  verdict: string;
+  overall_score: number;
+  is_sample: boolean;
+}
+
 const SampleGenerator = () => {
   const [idea, setIdea] = useState("");
   const [audience, setAudience] = useState("");
   const [log, setLog] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [rows, setRows] = useState<SampleRow[] | null>(null);
+  const [toggling, setToggling] = useState<string | null>(null);
+
+  // The admin's own ideas that have a full report: the ones that can be samples.
+  const loadRows = useCallback(async () => {
+    const { data: auth } = await supabase.auth.getUser();
+    if (!auth.user) return;
+    const { data } = await db
+      .from("ideas")
+      .select("id, idea, verdict, overall_score, is_sample")
+      .eq("user_id", auth.user.id)
+      .not("full_report", "is", null)
+      .order("created_at", { ascending: false })
+      .limit(30);
+    setRows(data ?? []);
+  }, []);
+
+  useEffect(() => {
+    loadRows();
+  }, [loadRows]);
+
+  const toggle = async (row: SampleRow) => {
+    setToggling(row.id);
+    const { error } = await db.rpc("set_sample_idea", { _idea_id: row.id, _on: !row.is_sample });
+    setToggling(null);
+    if (error) {
+      setLog("Couldn't change that sample. Has the sample rotation migration been applied?");
+      return;
+    }
+    setRows((rs) => rs?.map((r) => (r.id === row.id ? { ...r, is_sample: !r.is_sample } : r)) ?? null);
+  };
 
   const run = async () => {
     setBusy(true);
@@ -137,7 +176,8 @@ const SampleGenerator = () => {
       await requestFullReport(r.id, false);
       const { error } = await db.rpc("set_sample_idea", { _idea_id: r.id });
       if (error) throw new Error("set_sample_idea failed");
-      setLog("Done. /sample now shows this report.");
+      setLog("Done. It's now in the /sample rotation.");
+      loadRows();
     } catch (err) {
       setLog(err instanceof VexApiError ? err.message : "That didn't work. Check the function logs.");
     } finally {
@@ -149,7 +189,7 @@ const SampleGenerator = () => {
     <section className="mt-10 rounded-xl border border-border bg-card/60 p-5">
       <h2 className="mb-1 font-sans text-lg font-semibold text-foreground">Sample report</h2>
       <p className="mb-4 text-sm text-muted-foreground">
-        Runs the real pipeline on a sample idea (counts against your daily limits) and publishes it at{" "}
+        Runs the real pipeline on a sample idea (counts against your daily limits) and adds it to the rotation at{" "}
         <Link to="/sample" className="underline">/sample</Link>. Choose an idea that isn't yours to keep private.
       </p>
       <Textarea value={idea} onChange={(e) => setIdea(e.target.value.slice(0, 1500))} rows={3} placeholder="Sample idea" className="mb-2 text-base" />
@@ -158,6 +198,38 @@ const SampleGenerator = () => {
         {busy && <Loader2 className="animate-spin" aria-hidden />} Generate and publish sample
       </Button>
       {log && <p className="mt-3 text-sm text-foreground" role="status">{log}</p>}
+
+      {rows && rows.length > 0 && (
+        <div className="mt-6">
+          <h3 className="mb-1 text-sm font-semibold text-foreground">Your reports</h3>
+          <p className="mb-3 text-xs text-muted-foreground">
+            Published ones rotate on /sample: each visit shows the next. {rows.filter((r) => r.is_sample).length} published.
+          </p>
+          <ul className="divide-y divide-border rounded-xl border border-border">
+            {rows.map((r) => (
+              <li key={r.id} className="flex items-center gap-3 p-3">
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm text-foreground">{r.idea}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {r.verdict} · {Number(r.overall_score).toFixed(1)}
+                  </p>
+                </div>
+                <Button
+                  size="sm"
+                  variant={r.is_sample ? "secondary" : "outline"}
+                  onClick={() => toggle(r)}
+                  disabled={toggling === r.id}
+                  aria-pressed={r.is_sample}
+                  className="h-10 shrink-0"
+                >
+                  {toggling === r.id && <Loader2 className="animate-spin" aria-hidden />}
+                  {r.is_sample ? "Published" : "Publish"}
+                </Button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </section>
   );
 };

@@ -10,6 +10,7 @@ import { db } from "@/lib/vex-api";
 import { quickVerdictSchema, type FullReport, type QuickVerdict } from "@/types/verdict";
 
 interface Sample {
+  id: string;
   idea: string;
   audience: string | null;
   result: QuickVerdict;
@@ -17,21 +18,42 @@ interface Sample {
   created_at: string;
 }
 
+const ROTATION_KEY = "vex_sample_turn";
+
+// Each visit shows the next sample, so returning visitors see a different one.
+function nextTurn(count: number) {
+  try {
+    const turn = Number(localStorage.getItem(ROTATION_KEY)) || 0;
+    localStorage.setItem(ROTATION_KEY, String(turn + 1));
+    return turn % count;
+  } catch {
+    return Math.floor(Math.random() * count);
+  }
+}
+
 const SampleReport = () => {
-  const [sample, setSample] = useState<Sample | null>(null);
+  const [samples, setSamples] = useState<Sample[]>([]);
+  const [index, setIndex] = useState(0);
   const [status, setStatus] = useState<"loading" | "ready" | "missing">("loading");
+  const sample = samples[index] ?? null;
 
   useEffect(() => {
     db.rpc("get_sample_report").then(({ data, error }: { data: Sample[] | null; error: unknown }) => {
-      const row = !error && data?.[0];
-      if (!row || !quickVerdictSchema.safeParse(row.result).success) {
+      const rows = error ? [] : (data ?? []).filter((r) => quickVerdictSchema.safeParse(r.result).success);
+      if (!rows.length) {
         setStatus("missing");
         return;
       }
-      setSample(row);
+      setSamples(rows);
+      setIndex(nextTurn(rows.length));
       setStatus("ready");
     });
   }, []);
+
+  const showNext = () => {
+    setIndex((i) => (i + 1) % samples.length);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -57,7 +79,7 @@ const SampleReport = () => {
           </div>
         )}
         {status === "ready" && sample && (
-          <div className="space-y-6">
+          <div key={sample.id} className="space-y-6">
             {sample.audience && <p className="text-sm text-muted-foreground">For: {sample.audience}</p>}
             <VerdictResult idea={sample.idea} result={sample.result} />
             {sample.full_report && (
@@ -65,6 +87,11 @@ const SampleReport = () => {
                 <h2 className="pt-4 text-2xl font-semibold text-foreground">Full report</h2>
                 <FullReportView report={sample.full_report} />
               </>
+            )}
+            {samples.length > 1 && (
+              <Button variant="outline" onClick={showNext} className="h-11 w-full">
+                See another sample ({index + 1} of {samples.length})
+              </Button>
             )}
             <div className="rounded-xl border border-cta/40 bg-card/60 p-5 text-center">
               <p className="mb-4 text-foreground">Your turn.</p>
