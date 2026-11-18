@@ -378,6 +378,7 @@ export type Database = {
       }
       waitlist: {
         Row: {
+          approved_at: string | null
           created_at: string
           email: string
           followup_token_hash: string | null
@@ -389,6 +390,7 @@ export type Database = {
           utm_source: string | null
         }
         Insert: {
+          approved_at?: string | null
           created_at?: string
           email: string
           followup_token_hash?: string | null
@@ -400,6 +402,7 @@ export type Database = {
           utm_source?: string | null
         }
         Update: {
+          approved_at?: string | null
           created_at?: string
           email?: string
           followup_token_hash?: string | null
@@ -486,6 +489,20 @@ export type Database = {
           created_at: string
         }[]
       }
+      admin_set_access: {
+        Args: { _approved: boolean; _email: string }
+        Returns: undefined
+      }
+      admin_waitlist_entries: {
+        Args: { _search?: string; _status?: string }
+        Returns: {
+          approved_at: string
+          created_at: string
+          email: string
+          idea_note: string
+          utm_source: string
+        }[]
+      }
       admin_waitlist_stats: {
         Args: { _since?: string }
         Returns: {
@@ -525,6 +542,7 @@ export type Database = {
           result: Json
         }[]
       }
+      has_app_access: { Args: { _user_id: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -532,6 +550,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      my_app_access: { Args: never; Returns: boolean }
       refund_rate_limit: { Args: { _keys: string[] }; Returns: undefined }
       set_sample_idea: {
         Args: { _idea_id: string; _on?: boolean }
