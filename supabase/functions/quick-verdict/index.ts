@@ -14,7 +14,7 @@ const ANON_DAILY = 3;
 const ANON_IP_DAILY = 15; // stops resetting the browser id; shared networks still get room
 const USER_DAILY = 10;
 const CACHE_HOURS = 24;
-const PROMPT_VERSION = "v2"; // bump when scoring changes, so cached verdicts aren't reused
+const PROMPT_VERSION = "v3"; // bump when scoring changes, so cached verdicts aren't reused
 
 
 const SCREEN_SCHEMA = {
@@ -32,6 +32,8 @@ const SCREEN_SCHEMA = {
 const VERDICT_SCHEMA = {
   type: "object",
   properties: {
+    case_for: { type: "string", description: "the strongest honest case that this works, 1-2 sentences, citing evidence" },
+    case_against: { type: "string", description: "the strongest honest case that it fails, 1-2 sentences, citing evidence" },
     scores: {
       type: "object",
       properties: {
@@ -42,6 +44,8 @@ const VERDICT_SCHEMA = {
       },
       required: ["problem_clarity", "market_demand", "execution_difficulty", "differentiation"],
     },
+    band: { type: "string", enum: ["cannot_work", "unlikely", "needs_change", "promising", "likely", "exceptional"] },
+    overall_score: { type: "number", description: "a number inside the chosen band's range" },
     one_liner: { type: "string", description: "one direct sentence, max 140 characters" },
     top_risks: { type: "array", items: { type: "string" }, minItems: 3, maxItems: 3 },
     killer_question: { type: "string" },
@@ -69,7 +73,7 @@ const VERDICT_SCHEMA = {
     confidence: { type: "string", enum: ["low", "medium", "high"] },
   },
   required: [
-    "scores", "one_liner", "top_risks", "killer_question", "fatal_flaw",
+    "case_for", "case_against", "scores", "band", "overall_score", "one_liner", "top_risks", "killer_question", "fatal_flaw",
     "competitors", "regulatory_flags", "what_would_change_my_mind", "confidence",
   ],
 };
@@ -84,11 +88,22 @@ EVIDENCE RULES:
 - If there are no usable results, return an empty competitors list.
 - Regulatory flags should reflect the regulatory search results or widely known law for the domain. Return an empty list if nothing applies.
 
-SCORING (0-10, one decimal allowed). Score each dimension on its own; the overall score and verdict are calculated from these four, so don't let one weakness drag down the others. Use the whole scale: 5 is average, 7 is good, 9+ is rare.
-- problem_clarity: is there a specific, painful, frequent problem?
-- market_demand: evidence people pay for this today. Paying competitors are strong evidence of demand (score high), not a reason to score low.
-- execution_difficulty: 10 = very hard for a first-time founder to build and operate. A typical web or mobile app is 4-6.
-- differentiation: how different the idea as described is from what the search found. Existing competitors alone don't make this 0-1; reserve that for a near-identical copy of a dominant product.
+HOW TO SCORE. Work in this order:
+1. case_for and case_against: argue both sides honestly from the evidence.
+2. The four sub-scores (0-10, one decimal). Use the whole scale; 5 is average.
+   - problem_clarity: 9-10 a specific, painful, frequent problem people already try to solve; 5 real but mild or occasional; 0-2 vague or not really a problem.
+   - market_demand: 9-10 many people clearly pay for this today; 5 some signs of willingness to pay; 0-2 no evidence anyone would pay. Paying competitors are evidence FOR demand.
+   - execution_difficulty: 10 = very hard for a first-time founder to build and operate. A simple web or mobile app is 3-5; marketplaces, hardware, regulated or data-heavy products are 7-10.
+   - differentiation: 9-10 clearly different from everything found, in a way buyers care about; 5 a real but modest angle; 0-2 a near-copy of products that already win.
+3. band: how likely is this to work as described, for a small founding team? Pick exactly one:
+   - cannot_work (0.0-1.9): illegal, impossible, or nobody has the problem.
+   - unlikely (2.0-3.9): MOST LIKELY WON'T WORK. No real demand, a copy of entrenched products with no angle, or economics that don't add up.
+   - needs_change (4.0-5.4): could work, but only with a real change to the audience, model or angle.
+   - promising (5.5-6.9): could work as described, but a key assumption is unproven.
+   - likely (7.0-8.4): MOST LIKELY COULD WORK. Clear paying demand, a real angle, and buildable by a small team.
+   - exceptional (8.5-10): rare. Strong evidence of demand, a clear edge and an easy start.
+4. overall_score: a number inside that band's range. Within the band, go higher when the evidence is stronger.
+Spread your judgement: do not default to the middle. A weak idea belongs in unlikely, and a strong one belongs in likely, even though most ideas have some good and some bad. Judge only this idea on its evidence.
 
 FATAL FLAW: set fatal_flaw only when the idea cannot work as described: it is illegal, nobody has the problem, it is technically impossible, or it depends on something the founder clearly can't get. A crowded market, strong incumbents, low willingness to pay, or hard execution are risks, not fatal flaws; put them in top_risks. Otherwise return an empty string.
 

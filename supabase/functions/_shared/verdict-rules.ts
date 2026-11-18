@@ -24,23 +24,48 @@ const lowerConfidence = (c: Confidence, cap: Confidence): Confidence => {
   return order[Math.min(order.indexOf(c), order.indexOf(cap))];
 };
 
-// The overall score and verdict are computed here, not by the model: left to
-// itself the model scored the parts fairly and then gave a much harsher total.
-const WEIGHTS = { market_demand: 0.3, problem_clarity: 0.25, differentiation: 0.25, ease: 0.2 };
-export const PROCEED_AT = 6.5;
+// The board judges the overall score against fixed bands (see the prompt), so
+// ideas spread across the scale instead of averaging out around 6. These rules
+// then hold it to its own sub-scores and set the verdict from the number:
+//   KILL     under 4    most likely won't work
+//   PIVOT    4 to 6.9   could work, with a real change or an unproven assumption
+//   PROCEED  7 or more  most likely could work as described
+export const PROCEED_AT = 7;
 export const KILL_BELOW = 4;
 const FATAL_CAP = 3.9;
+const WEAK = 2.5; // a sub-score this low is a serious hole
+const NO_PROCEED_CAP = 6.9;
 
-export function scoreIdea(scores: Record<"problem_clarity" | "market_demand" | "execution_difficulty" | "differentiation", number>, fatalFlaw: string | null) {
-  const weighted =
-    WEIGHTS.market_demand * scores.market_demand +
-    WEIGHTS.problem_clarity * scores.problem_clarity +
-    WEIGHTS.differentiation * scores.differentiation +
-    WEIGHTS.ease * (10 - scores.execution_difficulty);
-  let overall = Math.round(weighted * 10) / 10;
-  if (fatalFlaw) overall = Math.min(overall, FATAL_CAP);
-  const verdict: Verdict = overall >= PROCEED_AT && !fatalFlaw ? "PROCEED" : overall < KILL_BELOW ? "KILL" : "PIVOT";
-  return { overall, verdict };
+const BANDS: Record<string, [number, number]> = {
+  cannot_work: [0, 1.9],
+  unlikely: [2, 3.9],
+  needs_change: [4, 5.4],
+  promising: [5.5, 6.9],
+  likely: [7, 8.4],
+  exceptional: [8.5, 10],
+};
+
+// The band is the board's actual judgement; keep the number inside it.
+export function fitBand(overall: number, band: unknown) {
+  const range = typeof band === "string" ? BANDS[band] : undefined;
+  return range ? Math.min(range[1], Math.max(range[0], overall)) : overall;
+}
+
+type Scores = Record<"problem_clarity" | "market_demand" | "execution_difficulty" | "differentiation", number>;
+
+export function scoreIdea(overall: number, scores: Scores, fatalFlaw: string | null) {
+  let score = overall;
+  // Can't be "most likely works" with no demand, no real problem, or a copy of what exists.
+  if (Math.min(scores.market_demand, scores.problem_clarity, scores.differentiation) <= WEAK) {
+    score = Math.min(score, NO_PROCEED_CAP);
+  }
+  // Can't be "most likely works" if the parts are mostly weak.
+  const strong = [scores.market_demand >= 7, scores.problem_clarity >= 7, scores.differentiation >= 6, scores.execution_difficulty <= 7];
+  if (strong.filter(Boolean).length < 3) score = Math.min(score, NO_PROCEED_CAP);
+  if (fatalFlaw) score = Math.min(score, FATAL_CAP);
+  score = Math.round(score * 10) / 10;
+  const verdict: Verdict = score >= PROCEED_AT ? "PROCEED" : score < KILL_BELOW ? "KILL" : "PIVOT";
+  return { overall: score, verdict };
 }
 
 export function buildResult(raw: any, sources: SearchResult[], searchOk: boolean) {
@@ -57,8 +82,10 @@ export function buildResult(raw: any, sources: SearchResult[], searchOk: boolean
   if (Object.values(scores).some((v) => v === null) || !oneLiner || risks.length < 3 || !killer) {
     throw new VexError("internal", "verdict failed validation");
   }
+  const boardOverall = clampScore(raw?.overall_score);
+  if (boardOverall === null) throw new VexError("internal", "verdict failed validation");
   const fatalFlaw = cleanText(raw?.fatal_flaw, 300);
-  const { overall, verdict } = scoreIdea(scores as Record<keyof typeof scores, number>, fatalFlaw);
+  const { overall, verdict } = scoreIdea(fitBand(boardOverall, raw?.band), scores as Scores, fatalFlaw);
 
   const byId = new Map(sources.map((r) => [r.id, r]));
   const seenHosts = new Set<string>();
@@ -99,6 +126,8 @@ export function buildResult(raw: any, sources: SearchResult[], searchOk: boolean
     top_risks: risks,
     killer_question: killer,
     fatal_flaw: fatalFlaw,
+    case_for: cleanText(raw?.case_for, 400) ?? "",
+    case_against: cleanText(raw?.case_against, 400) ?? "",
     competitors,
     competitors_status: !searchOk ? "unverified" : competitors.length ? "verified" : "none_found",
     regulatory_flags: cleanList(raw?.regulatory_flags, 4, 240),

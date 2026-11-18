@@ -31,3 +31,11 @@ Please run the new SQL migration `supabase/migrations/20261117120000_sample_rota
 Paste this into Lovable:
 
 Please redeploy the `quick-verdict` edge function from `supabase/functions/quick-verdict` (it uses the updated shared file `supabase/functions/_shared/verdict-rules.ts`), with JWT verification off as before. No database changes and no app code changes. The overall score and verdict are now calculated from the four sub-scores instead of being chosen by the model.
+
+---
+
+## Update: wider score range (18 Nov 2026)
+
+Paste this into Lovable:
+
+Please redeploy the `quick-verdict` edge function from `supabase/functions/quick-verdict` (it uses the updated shared file `supabase/functions/_shared/verdict-rules.ts`), with JWT verification off as before. No database changes and no app code changes.

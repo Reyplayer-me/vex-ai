@@ -5,7 +5,7 @@ const faqs = [
   {
     question: "How does Vex score ideas?",
     answer:
-      "First we search the web for products that already do what you describe, what they charge, and any regulations that might apply. Then an AI model, acting as a board of five advisors, scores your idea from 0 to 10 on problem clarity, market demand, execution difficulty and differentiation, using those search results as evidence. The overall score is a fixed weighting of those four scores, and it sets the verdict: 6.5 or more is PROCEED, under 4 is KILL, and anything in between is PIVOT. A crowded market alone never means KILL; that is reserved for low scores or a fatal flaw, such as an idea that is illegal or that nobody needs. Every result shows a confidence level so you know how much evidence it rests on.",
+      "First we search the web for products that already do what you describe, what they charge, and any regulations that might apply. Then an AI model, acting as a board of five advisors, scores your idea from 0 to 10 on problem clarity, market demand, execution difficulty and differentiation, using those search results as evidence. The board then argues the case for and against, and places the idea on a fixed scale of how likely it is to work. Under 4 is KILL: it most likely won't work. 4 to 6.9 is PIVOT: it could work with a change, or once a key assumption is proven. 7 or more is PROCEED: it most likely could work as described. An idea can't get PROCEED if it has no real demand or is a copy of what already exists, and a fatal flaw, such as being illegal, always means KILL. Every result shows a confidence level so you know how much evidence it rests on.",
   },
   {
     question: "Where do the competitors come from?",
