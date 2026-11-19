@@ -619,7 +619,8 @@ body.wl-body {
 /* Sections */
 
 .wl-section {
-  padding: var(--section-space) 0;
+  padding-top: var(--section-space);
+  padding-bottom: var(--section-space);
 }
 
 .wl-panel {
