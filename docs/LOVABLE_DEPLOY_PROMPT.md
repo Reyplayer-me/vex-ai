@@ -39,3 +39,11 @@ Please redeploy the `quick-verdict` edge function from `supabase/functions/quick
 Paste this into Lovable:
 
 Please redeploy the `quick-verdict` edge function from `supabase/functions/quick-verdict` (it uses the updated shared file `supabase/functions/_shared/verdict-rules.ts`), with JWT verification off as before. No database changes and no app code changes.
+
+---
+
+## Update: PROCEED from 6.5, advisor-style judging (20 Nov 2026)
+
+Paste this into Lovable:
+
+Please redeploy the `quick-verdict` edge function from `supabase/functions/quick-verdict` (it uses the updated shared file `supabase/functions/_shared/verdict-rules.ts`), with JWT verification off as before. No database changes and no app code changes.

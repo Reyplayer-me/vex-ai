@@ -84,27 +84,28 @@ Deno.test("rejects output that is missing required fields", () => {
 
 const strong = { problem_clarity: 8.5, market_demand: 8, execution_difficulty: 4, differentiation: 7 };
 
-Deno.test("verdict bands: under 4 KILL, 4-6.9 PIVOT, 7+ PROCEED", () => {
+Deno.test("verdict bands: under 4 KILL, 4-6.4 PIVOT, 6.5+ PROCEED", () => {
   assertEquals(scoreIdea(2.8, strong, null).verdict, "KILL");
   assertEquals(scoreIdea(4, strong, null).verdict, "PIVOT");
-  assertEquals(scoreIdea(6.9, strong, null).verdict, "PIVOT");
-  assertEquals(scoreIdea(7, strong, null).verdict, "PROCEED");
+  assertEquals(scoreIdea(6.4, strong, null).verdict, "PIVOT");
+  assertEquals(scoreIdea(6.5, strong, null).verdict, "PROCEED");
   assertEquals(scoreIdea(9.1, strong, null).overall, 9.1);
 });
 
 Deno.test("the score stays inside the band the board chose", () => {
   assertEquals(fitBand(6.5, "unlikely"), 3.9);
-  assertEquals(fitBand(2, "likely"), 7);
+  assertEquals(fitBand(2, "likely"), 6.5);
+  assertEquals(fitBand(6.8, "promising"), 6.4);
   assertEquals(fitBand(7.6, "likely"), 7.6);
   assertEquals(fitBand(7.6, "made_up"), 7.6);
   const r = buildResult(raw([], { band: "unlikely", overall_score: 6 }), sources, true);
   assertEquals([r.overall_score, r.verdict], [3.9, "KILL"]);
 });
 
-// The accounting sample: strong problem and demand, but differentiation 2.5. It came out PROCEED 6.5 before.
+// The accounting sample: strong problem and demand, but differentiation 2.5.
 Deno.test("no PROCEED for a near-copy, no demand, or mostly weak parts", () => {
   const accounting = { problem_clarity: 9, market_demand: 8.5, execution_difficulty: 4.5, differentiation: 2.5 };
-  assertEquals(scoreIdea(7.8, accounting, null), { overall: 6.9, verdict: "PIVOT" });
+  assertEquals(scoreIdea(7.8, accounting, null), { overall: 6.4, verdict: "PIVOT" });
   assertEquals(scoreIdea(7.5, { ...strong, market_demand: 2 }, null).verdict, "PIVOT");
   const mostlyWeak = { problem_clarity: 6, market_demand: 6, execution_difficulty: 8, differentiation: 7 };
   assertEquals(scoreIdea(7.5, mostlyWeak, null).verdict, "PIVOT");

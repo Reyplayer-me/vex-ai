@@ -28,20 +28,20 @@ const lowerConfidence = (c: Confidence, cap: Confidence): Confidence => {
 // ideas spread across the scale instead of averaging out around 6. These rules
 // then hold it to its own sub-scores and set the verdict from the number:
 //   KILL     under 4    most likely won't work
-//   PIVOT    4 to 6.9   could work, with a real change or an unproven assumption
-//   PROCEED  7 or more  most likely could work as described
-export const PROCEED_AT = 7;
+//   PIVOT    4 to 6.4   could work, with a real change or an unproven assumption
+//   PROCEED  6.5 or more  most likely could work as described
+export const PROCEED_AT = 6.5;
 export const KILL_BELOW = 4;
 const FATAL_CAP = 3.9;
 const WEAK = 2.5; // a sub-score this low is a serious hole
-const NO_PROCEED_CAP = 6.9;
+const NO_PROCEED_CAP = 6.4;
 
 const BANDS: Record<string, [number, number]> = {
   cannot_work: [0, 1.9],
   unlikely: [2, 3.9],
   needs_change: [4, 5.4],
-  promising: [5.5, 6.9],
-  likely: [7, 8.4],
+  promising: [5.5, 6.4],
+  likely: [6.5, 8.4],
   exceptional: [8.5, 10],
 };
 
