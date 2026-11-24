@@ -1,6 +1,6 @@
 // Run with: deno test supabase/functions/_shared/verdict-rules.test.ts
 import { assert, assertEquals, assertThrows } from "https://deno.land/std@0.224.0/assert/mod.ts";
-import { buildResult, fitBand, precheck, scoreIdea } from "./verdict-rules.ts";
+import { buildResult, placeInBand, precheck, scoreIdea } from "./verdict-rules.ts";
 
 const sources = [
   { id: "C1", title: "MealPrep Pal - student meal planner", url: "https://mealpreppal.example/", content: "MealPrep Pal plans cheap weekly meals." },
@@ -10,7 +10,6 @@ const sources = [
 
 const raw = (competitors: unknown[], extra: Record<string, unknown> = {}) => ({
   band: "needs_change",
-  overall_score: 5.44,
   scores: { problem_clarity: 7, market_demand: 6, execution_difficulty: 12, differentiation: -1 },
   one_liner: "Crowded, but students are underserved.",
   top_risks: ["Risk one", "Risk two", "Risk three"],
@@ -67,17 +66,16 @@ Deno.test("search failure means unverified competitors and low confidence", () =
   assertEquals(r.confidence, "low");
 });
 
-Deno.test("clamps sub-scores to 0-10 and rounds the overall to one decimal", () => {
+Deno.test("clamps sub-scores to 0-10 and keeps the score in the chosen band", () => {
   const r = buildResult(raw([]), sources, true);
   assertEquals(r.scores.execution_difficulty, 10);
   assertEquals(r.scores.differentiation, 0);
-  assertEquals(r.overall_score, 5.4);
   assertEquals(r.verdict, "PIVOT");
+  assert(r.overall_score >= 4 && r.overall_score <= 5.4);
 });
 
 Deno.test("rejects output that is missing required fields", () => {
   assertThrows(() => buildResult(raw([], { scores: { problem_clarity: 7 } }), sources, true));
-  assertThrows(() => buildResult(raw([], { overall_score: "high" }), sources, true));
   assertThrows(() => buildResult(raw([], { top_risks: ["only one"] }), sources, true));
   assertThrows(() => buildResult(raw([], { killer_question: "" }), sources, true));
 });
@@ -92,14 +90,23 @@ Deno.test("verdict bands: under 4 KILL, 4-6.4 PIVOT, 6.5+ PROCEED", () => {
   assertEquals(scoreIdea(9.1, strong, null).overall, 9.1);
 });
 
-Deno.test("the score stays inside the band the board chose", () => {
-  assertEquals(fitBand(6.5, "unlikely"), 3.9);
-  assertEquals(fitBand(2, "likely"), 6.5);
-  assertEquals(fitBand(6.8, "promising"), 6.4);
-  assertEquals(fitBand(7.6, "likely"), 7.6);
-  assertEquals(fitBand(7.6, "made_up"), 7.6);
-  const r = buildResult(raw([], { band: "unlikely", overall_score: 6 }), sources, true);
-  assertEquals([r.overall_score, r.verdict], [3.9, "KILL"]);
+Deno.test("the score inside a band comes from the sub-scores, not a stock number", () => {
+  // Two real ideas the board put in needs_change; it wrote 4.8 for both.
+  const accounting = { problem_clarity: 9.1, market_demand: 7.8, execution_difficulty: 5.8, differentiation: 3.2 };
+  const weaker = { problem_clarity: 6, market_demand: 5, execution_difficulty: 7, differentiation: 3 };
+  const a = placeInBand("needs_change", accounting);
+  const b = placeInBand("needs_change", weaker);
+  assert(a >= 4 && a <= 5.4 && b >= 4 && b <= 5.4, "both stay in the band");
+  assert(a - b >= 0.5, `stronger evidence scores clearly higher (${a.toFixed(2)} vs ${b.toFixed(2)})`);
+  assertEquals(placeInBand("likely", { problem_clarity: 10, market_demand: 10, execution_difficulty: 0, differentiation: 10 }), 8.4);
+  assertEquals(placeInBand("likely", { problem_clarity: 0, market_demand: 0, execution_difficulty: 10, differentiation: 0 }), 6.5);
+  const r = buildResult(raw([], { band: "unlikely" }), sources, true);
+  assertEquals(r.verdict, "KILL");
+});
+
+Deno.test("an unknown band falls back to the sub-scores", () => {
+  const scores = { problem_clarity: 8, market_demand: 8, execution_difficulty: 4, differentiation: 7 };
+  assert(Math.abs(placeInBand("made_up", scores) - 7.35) < 1e-9, "0.3*8 + 0.25*8 + 0.25*7 + 0.2*6");
 });
 
 // The accounting sample: strong problem and demand, but differentiation 2.5.

@@ -12,7 +12,7 @@ import { RUN_LIMITS, runLimitPlan } from "../_shared/run-limits.ts";
 const MAX_IDEA = 1500;
 const MAX_AUDIENCE = 200;
 const CACHE_HOURS = 24;
-const PROMPT_VERSION = "v4"; // bump when scoring changes, so cached verdicts aren't reused
+const PROMPT_VERSION = "v5"; // bump when scoring changes, so cached verdicts aren't reused
 
 
 const SCREEN_SCHEMA = {
@@ -43,7 +43,6 @@ const VERDICT_SCHEMA = {
       required: ["problem_clarity", "market_demand", "execution_difficulty", "differentiation"],
     },
     band: { type: "string", enum: ["cannot_work", "unlikely", "needs_change", "promising", "likely", "exceptional"] },
-    overall_score: { type: "number", description: "a number inside the chosen band's range" },
     one_liner: { type: "string", description: "one direct sentence, max 140 characters" },
     top_risks: { type: "array", items: { type: "string" }, minItems: 3, maxItems: 3 },
     killer_question: { type: "string" },
@@ -71,7 +70,7 @@ const VERDICT_SCHEMA = {
     confidence: { type: "string", enum: ["low", "medium", "high"] },
   },
   required: [
-    "case_for", "case_against", "scores", "band", "overall_score", "one_liner", "top_risks", "killer_question", "fatal_flaw",
+    "case_for", "case_against", "scores", "band", "one_liner", "top_risks", "killer_question", "fatal_flaw",
     "competitors", "regulatory_flags", "what_would_change_my_mind", "confidence",
   ],
 };
@@ -108,7 +107,7 @@ HOW TO SCORE. Work in this order:
    - promising (5.5-6.4): could work as described, but a key assumption is unproven.
    - likely (6.5-8.4): MOST LIKELY COULD WORK. Clear paying demand, a real angle, and buildable by a small team.
    - exceptional (8.5-10): rare. Strong evidence of demand, a clear edge and an easy start.
-4. overall_score: a number inside that band's range. Within the band, go higher when the evidence is stronger.
+The exact score inside the band is worked out from your four sub-scores, so make each sub-score reflect this idea's own evidence.
 Spread your judgement: do not default to the middle. A weak idea belongs in unlikely, and a strong one belongs in likely, even though most ideas have some good and some bad. Judge only this idea on its evidence.
 
 FATAL FLAW: set fatal_flaw only when the idea cannot work as described: it is illegal, nobody has the problem, it is technically impossible, or it depends on something the founder clearly can't get. A crowded market, strong incumbents, low willingness to pay, or hard execution are risks, not fatal flaws; put them in top_risks. Otherwise return an empty string.
@@ -262,7 +261,7 @@ serve(async (req) => {
       } catch (err) {
         const e = err instanceof VexError ? err : new VexError("internal", err instanceof Error ? err.message : String(err));
         console.error("quick-verdict failed", { code: e.code, detail: e.detail });
-        await db.rpc("refund_rate_limit", { _keys: limitKeys });
+        if (plan) await db.rpc("refund_rate_limit", { _keys: plan.keys });
         sse(controller, "error", { error: e.code, message: e.userMessage ?? friendly(e.code), retryable: e.code === "internal" || e.code === "busy" });
       } finally {
         controller.close();

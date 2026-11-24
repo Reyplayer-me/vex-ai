@@ -47,3 +47,11 @@ Please redeploy the `quick-verdict` edge function from `supabase/functions/quick
 Paste this into Lovable:
 
 Please redeploy the `quick-verdict` edge function from `supabase/functions/quick-verdict` (it uses the updated shared file `supabase/functions/_shared/verdict-rules.ts`), with JWT verification off as before. No database changes and no app code changes.
+
+---
+
+## Update: score inside the band from sub-scores, refund fix (24 Nov 2026)
+
+Paste this into Lovable:
+
+Please redeploy the `quick-verdict` edge function from `supabase/functions/quick-verdict` (it uses the updated shared file `supabase/functions/_shared/verdict-rules.ts`), with JWT verification off as before. No database changes and no app code changes. This also fixes a crash in its error handler (it referred to `limitKeys`, which no longer exists), so failed runs are refunded again.

@@ -24,9 +24,11 @@ const lowerConfidence = (c: Confidence, cap: Confidence): Confidence => {
   return order[Math.min(order.indexOf(c), order.indexOf(cap))];
 };
 
-// The board judges the overall score against fixed bands (see the prompt), so
-// ideas spread across the scale instead of averaging out around 6. These rules
-// then hold it to its own sub-scores and set the verdict from the number:
+// The board picks a band (its judgement of how likely the idea is to work), and
+// code places the score inside that band from the four sub-scores. Left to pick
+// the number itself, the model wrote the same one almost every time (4.8 for
+// needs_change, 3.2 for unlikely). Guard rails then hold it to its sub-scores
+// and the verdict follows the number:
 //   KILL     under 4    most likely won't work
 //   PIVOT    4 to 6.4   could work, with a real change or an unproven assumption
 //   PROCEED  6.5 or more  most likely could work as described
@@ -45,13 +47,29 @@ const BANDS: Record<string, [number, number]> = {
   exceptional: [8.5, 10],
 };
 
-// The band is the board's actual judgement; keep the number inside it.
-export function fitBand(overall: number, band: unknown) {
-  const range = typeof band === "string" ? BANDS[band] : undefined;
-  return range ? Math.min(range[1], Math.max(range[0], overall)) : overall;
+type Scores = Record<"problem_clarity" | "market_demand" | "execution_difficulty" | "differentiation", number>;
+
+// How strong the evidence is overall, 0-10.
+export function strength(scores: Scores) {
+  return (
+    0.3 * scores.market_demand +
+    0.25 * scores.problem_clarity +
+    0.25 * scores.differentiation +
+    0.2 * (10 - scores.execution_difficulty)
+  );
 }
 
-type Scores = Record<"problem_clarity" | "market_demand" | "execution_difficulty" | "differentiation", number>;
+// Strength 3 or less sits at the bottom of the band, 8 or more at the top.
+const STRENGTH_LOW = 3;
+const STRENGTH_HIGH = 8;
+
+export function placeInBand(band: unknown, scores: Scores) {
+  const s = strength(scores);
+  const range = typeof band === "string" ? BANDS[band] : undefined;
+  if (!range) return s; // no usable band: fall back to the sub-scores alone
+  const t = Math.min(1, Math.max(0, (s - STRENGTH_LOW) / (STRENGTH_HIGH - STRENGTH_LOW)));
+  return range[0] + t * (range[1] - range[0]);
+}
 
 export function scoreIdea(overall: number, scores: Scores, fatalFlaw: string | null) {
   let score = overall;
@@ -82,10 +100,8 @@ export function buildResult(raw: any, sources: SearchResult[], searchOk: boolean
   if (Object.values(scores).some((v) => v === null) || !oneLiner || risks.length < 3 || !killer) {
     throw new VexError("internal", "verdict failed validation");
   }
-  const boardOverall = clampScore(raw?.overall_score);
-  if (boardOverall === null) throw new VexError("internal", "verdict failed validation");
   const fatalFlaw = cleanText(raw?.fatal_flaw, 300);
-  const { overall, verdict } = scoreIdea(fitBand(boardOverall, raw?.band), scores as Scores, fatalFlaw);
+  const { overall, verdict } = scoreIdea(placeInBand(raw?.band, scores as Scores), scores as Scores, fatalFlaw);
 
   const byId = new Map(sources.map((r) => [r.id, r]));
   const seenHosts = new Set<string>();
