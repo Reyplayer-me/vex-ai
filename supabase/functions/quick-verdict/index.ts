@@ -4,15 +4,13 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import {
   aiToolCall, asData, cleanText, clientIp, corsHeaders, DATA_RULE, fail,
-  friendly, getUser, hasAccess, randomToken, salt, type SearchResult, serviceClient, sha256, VexError, webSearch,
+  friendly, getUser, hasAccess, isAdmin, randomToken, salt, type SearchResult, serviceClient, sha256, VexError, webSearch,
 } from "../_shared/vex.ts";
 import { buildResult, precheck } from "../_shared/verdict-rules.ts";
+import { RUN_LIMITS, runLimitPlan } from "../_shared/run-limits.ts";
 
 const MAX_IDEA = 1500;
 const MAX_AUDIENCE = 200;
-const ANON_DAILY = 3;
-const ANON_IP_DAILY = 15; // stops resetting the browser id; shared networks still get room
-const USER_DAILY = 10;
 const CACHE_HOURS = 24;
 const PROMPT_VERSION = "v4"; // bump when scoring changes, so cached verdicts aren't reused
 
@@ -152,23 +150,22 @@ serve(async (req) => {
   // Invite-only beta: only admins and approved waitlist emails can run Vex.
   if (!user || !(await hasAccess(db, user.id))) return fail("no_access");
   const ipHash = await sha256(`${salt()}|ip|${clientIp(req)}`);
-  const limitKeys = user
-    ? [`u:${user.id}`]
-    : [`v:${await sha256(`${ipHash}|${visitorId}`)}`, `ip:${ipHash}`];
-  const limits = user ? [USER_DAILY] : [ANON_DAILY, ANON_IP_DAILY];
-
-  const { data: allowed, error: limitError } = await db.rpc("consume_rate_limit", { _keys: limitKeys, _limits: limits });
-  if (limitError) {
-    console.error("quick-verdict: rate limit check failed", limitError.message);
-    return fail("internal");
-  }
-  if (!allowed) {
-    return fail(
-      "rate_limited",
-      user
-        ? "You've run 10 ideas today. Come back tomorrow, or open one of your saved ideas."
-        : "You've used today's 3 free runs. Sign up free to keep going.",
-    );
+  // Admins skip the daily cap so outreach ideas can be run in bulk.
+  const plan = runLimitPlan(user?.id ?? null, user ? await isAdmin(db, user.id) : false, await sha256(`${ipHash}|${visitorId}`), ipHash);
+  if (plan) {
+    const { data: allowed, error: limitError } = await db.rpc("consume_rate_limit", { _keys: plan.keys, _limits: plan.limits });
+    if (limitError) {
+      console.error("quick-verdict: rate limit check failed", limitError.message);
+      return fail("internal");
+    }
+    if (!allowed) {
+      return fail(
+        "rate_limited",
+        user
+          ? `You've reached today's limit of ${RUN_LIMITS.user} ideas. It resets at midnight UTC.`
+          : `You've used today's ${RUN_LIMITS.anon} free runs. Sign up free to keep going.`,
+      );
+    }
   }
 
   const stream = new ReadableStream({

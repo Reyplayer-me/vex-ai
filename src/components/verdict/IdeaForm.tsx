@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -18,6 +19,13 @@ export const IdeaForm = () => {
   const [audience, setAudience] = useState("");
   const [stage, setStage] = useState<RunStage | null>(null);
   const [error, setError] = useState<{ message: string; code: string } | null>(null);
+  const [signedIn, setSignedIn] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setSignedIn(!!data.session));
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => setSignedIn(!!session));
+    return () => sub.subscription.unsubscribe();
+  }, []);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,7 +88,7 @@ export const IdeaForm = () => {
       {error && (
         <div role="alert" className="rounded-lg border border-verdict-kill/40 bg-verdict-kill/10 p-3 text-sm text-foreground">
           {error.message}
-          {error.code === "rate_limited" && (
+          {error.code === "rate_limited" && !signedIn && (
             <Link to="/auth?mode=signup" className="mt-2 block font-semibold text-cta underline underline-offset-4">
               Sign up free for more runs
             </Link>

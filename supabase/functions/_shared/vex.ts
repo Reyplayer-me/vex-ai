@@ -83,6 +83,16 @@ export async function getUser(req: Request) {
   return data.user;
 }
 
+/** True when the user has the admin role in user_roles (see has_role). */
+export async function isAdmin(db: SupabaseClient, userId: string) {
+  const { data, error } = await db.rpc("has_role", { _user_id: userId, _role: "admin" });
+  if (error) {
+    console.error("has_role failed", error.message);
+    return false;
+  }
+  return data === true;
+}
+
 /** Invite-only beta: true for admins and approved, verified waitlist emails (see has_app_access). */
 export async function hasAccess(db: SupabaseClient, userId: string) {
   const { data, error } = await db.rpc("has_app_access", { _user_id: userId });
