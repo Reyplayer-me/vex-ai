@@ -238,8 +238,8 @@ const Auth = () => {
             setLoading(true);
             try {
               const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: `${window.location.origin}/auth?mode=login&next=${encodeURIComponent(next)}` });
-              if (result.error) toast({ title: "Google sign-in didn't finish", description: "Please try again or continue with email.", variant: "destructive" });
-            } catch { toast({ title: "Google sign-in didn't finish", description: "Please try again or continue with email.", variant: "destructive" }); }
+              if (result.error) toast({ title: "Google sign-in didn't finish", description: "If no Google window opened, allow pop-ups for this site and try again — or continue with email.", variant: "destructive" });
+            } catch { toast({ title: "Google sign-in didn't finish", description: "If no Google window opened, allow pop-ups for this site and try again — or continue with email.", variant: "destructive" }); }
             finally { setLoading(false); }
           }}><GoogleLogo />Continue with Google</Button>
           <form onSubmit={handleSubmit} className="space-y-4">

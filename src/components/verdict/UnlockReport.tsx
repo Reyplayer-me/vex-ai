@@ -89,9 +89,9 @@ export const UnlockReport = ({ ideaId, claimToken, signedIn, generating, error, 
     track("email_submitted");
     try {
       const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: redirect });
-      if (result.error) setFormError("Google sign-in didn't finish. Try again or use your email.");
+      if (result.error) setFormError("Google sign-in didn't finish. If no Google window opened, allow pop-ups for this site and try again — or use your email.");
     } catch {
-      setFormError("Google sign-in didn't finish. Try again or use your email.");
+      setFormError("Google sign-in didn't finish. If no Google window opened, allow pop-ups for this site and try again — or use your email.");
     }
   };
 
