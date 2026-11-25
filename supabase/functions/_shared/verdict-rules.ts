@@ -59,9 +59,10 @@ export function strength(scores: Scores) {
   );
 }
 
-// Strength 3 or less sits at the bottom of the band, 8 or more at the top.
-const STRENGTH_LOW = 3;
-const STRENGTH_HIGH = 8;
+// Strength 2 or less sits at the bottom of the band, 7 or more at the top.
+// Set generously: a typical idea with real demand lands in the upper half.
+const STRENGTH_LOW = 2;
+const STRENGTH_HIGH = 7;
 
 export function placeInBand(band: unknown, scores: Scores) {
   const s = strength(scores);

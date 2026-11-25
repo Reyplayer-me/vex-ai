@@ -12,7 +12,7 @@ import { RUN_LIMITS, runLimitPlan } from "../_shared/run-limits.ts";
 const MAX_IDEA = 1500;
 const MAX_AUDIENCE = 200;
 const CACHE_HOURS = 24;
-const PROMPT_VERSION = "v5"; // bump when scoring changes, so cached verdicts aren't reused
+const PROMPT_VERSION = "v6"; // bump when scoring changes, so cached verdicts aren't reused
 
 
 const SCREEN_SCHEMA = {
@@ -30,7 +30,7 @@ const SCREEN_SCHEMA = {
 const VERDICT_SCHEMA = {
   type: "object",
   properties: {
-    case_for: { type: "string", description: "the strongest honest case that this works, 1-2 sentences, citing evidence" },
+    case_for: { type: "string", description: "what is genuinely good about this idea and why it could work, 1-2 specific sentences citing evidence" },
     case_against: { type: "string", description: "the strongest honest case that it fails, 1-2 sentences, citing evidence" },
     scores: {
       type: "object",
@@ -43,7 +43,7 @@ const VERDICT_SCHEMA = {
       required: ["problem_clarity", "market_demand", "execution_difficulty", "differentiation"],
     },
     band: { type: "string", enum: ["cannot_work", "unlikely", "needs_change", "promising", "likely", "exceptional"] },
-    one_liner: { type: "string", description: "one direct sentence, max 140 characters" },
+    one_liner: { type: "string", description: "one sentence, max 140 characters: what is promising, then the one thing to fix" },
     top_risks: { type: "array", items: { type: "string" }, minItems: 3, maxItems: 3 },
     killer_question: { type: "string" },
     fatal_flaw: {
@@ -102,17 +102,17 @@ HOW TO SCORE. Work in this order:
    - differentiation: 9-10 clearly different from everything found, in a way buyers care about; 5 a real but modest angle; 0-2 a near-copy of products that already win.
 3. band: how likely is this to work as described, for a small founding team? Pick exactly one:
    - cannot_work (0.0-1.9): illegal, impossible, or nobody has the problem.
-   - unlikely (2.0-3.9): MOST LIKELY WON'T WORK. No real demand, a copy of entrenched products with no angle, or economics that don't add up.
+   - unlikely (2.0-3.9): MOST LIKELY WON'T WORK AS IT STANDS. Clearly no paying demand, or a near-copy of entrenched products with nothing new, or economics that clearly don't add up.
    - needs_change (4.0-5.4): could work, but only with a real change to the audience, model or angle.
    - promising (5.5-6.4): could work as described, but a key assumption is unproven.
    - likely (6.5-8.4): MOST LIKELY COULD WORK. Clear paying demand, a real angle, and buildable by a small team.
    - exceptional (8.5-10): rare. Strong evidence of demand, a clear edge and an easy start.
 The exact score inside the band is worked out from your four sub-scores, so make each sub-score reflect this idea's own evidence.
-Spread your judgement: do not default to the middle. A weak idea belongs in unlikely, and a strong one belongs in likely, even though most ideas have some good and some bad. Judge only this idea on its evidence.
+Be generous and give the founder the benefit of the doubt. If you are torn between two bands, choose the higher one. Use unlikely or cannot_work only when the evidence clearly says so; a crowded market where the idea has any real angle belongs in needs_change or above. A strong idea belongs in likely: don't hold it back to the middle. Judge only this idea on its evidence.
 
 FATAL FLAW: set fatal_flaw only when the idea cannot work as described: it is illegal, nobody has the problem, it is technically impossible, or it depends on something the founder clearly can't get. A crowded market, strong incumbents, low willingness to pay, or hard execution are risks, not fatal flaws; put them in top_risks. Otherwise return an empty string.
 
-TONE: direct, human, specific to this idea. No hype, no motivational language, no invented statistics, no promise of success. The one_liner is a sharp, honest summary a founder would screenshot: it can sting, but it should point at what would have to be true for this to work, not just mock it. The killer_question is the Risk Analyst's single sharpest question the founder must answer before building. what_would_change_my_mind names the specific angle or evidence that would make this a stronger idea (for a crowded market, the niche or wedge that could work).
+TONE: warm, direct and specific to this idea, like a mentor who wants the founder to succeed. Lead with what is genuinely good, then be honest about what needs to change and how. Never mock the idea or the founder. No hype, no invented statistics, no promise of success. The one_liner is a sentence a founder would be glad to screenshot: name what is promising, then the single most important thing to fix or prove. The killer_question is the Risk Analyst's single sharpest question the founder must answer before building. what_would_change_my_mind names the specific angle or evidence that would make this a stronger idea (for a crowded market, the niche or wedge that could work).
 Confidence: high only when the search returned clearly relevant competitors and pricing; low when evidence is thin.`;
 
 function normalise(text: string) {

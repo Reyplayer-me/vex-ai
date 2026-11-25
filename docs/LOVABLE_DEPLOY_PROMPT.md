@@ -55,3 +55,11 @@ Please redeploy the `quick-verdict` edge function from `supabase/functions/quick
 Paste this into Lovable:
 
 Please redeploy the `quick-verdict` edge function from `supabase/functions/quick-verdict` (it uses the updated shared file `supabase/functions/_shared/verdict-rules.ts`), with JWT verification off as before. No database changes and no app code changes. This also fixes a crash in its error handler (it referred to `limitKeys`, which no longer exists), so failed runs are refunded again.
+
+---
+
+## Update: generous, encouraging verdicts (25 Nov 2026)
+
+Paste this into Lovable:
+
+The `quick-verdict` edge function that's live is an old version. Please deploy it again from the current `main` branch, using `supabase/functions/quick-verdict/index.ts` and the shared file `supabase/functions/_shared/verdict-rules.ts`, with JWT verification off. Don't change any code. After deploying, confirm that the deployed `verdict-rules.ts` contains the function `placeInBand` with `STRENGTH_LOW = 2`, and that `quick-verdict/index.ts` has `PROMPT_VERSION = "v6"`. Then publish the frontend too.

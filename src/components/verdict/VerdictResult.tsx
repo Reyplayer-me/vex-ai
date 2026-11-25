@@ -1,11 +1,11 @@
-import { AlertTriangle, ExternalLink, HelpCircle, Scale, ShieldAlert, Info } from "lucide-react";
+import { AlertTriangle, ExternalLink, HelpCircle, Info, Scale, ShieldAlert, Sparkles, TrendingUp } from "lucide-react";
 import type { QuickVerdict, Verdict } from "@/types/verdict";
 import { cn } from "@/lib/utils";
 
 export const VERDICT_STYLE: Record<Verdict, { text: string; border: string; bg: string; label: string }> = {
   PROCEED: { text: "text-verdict-proceed", border: "border-verdict-proceed", bg: "bg-verdict-proceed/10", label: "Build it" },
-  PIVOT: { text: "text-verdict-pivot", border: "border-verdict-pivot", bg: "bg-verdict-pivot/10", label: "Change it first" },
-  KILL: { text: "text-verdict-kill", border: "border-verdict-kill", bg: "bg-verdict-kill/10", label: "Don't build this" },
+  PIVOT: { text: "text-verdict-pivot", border: "border-verdict-pivot", bg: "bg-verdict-pivot/10", label: "Promising: sharpen it first" },
+  KILL: { text: "text-verdict-kill", border: "border-verdict-kill", bg: "bg-verdict-kill/10", label: "Rethink it before you build" },
 };
 
 export const VerdictStamp = ({ verdict, size = "lg" }: { verdict: Verdict; size?: "sm" | "lg" }) => {
@@ -108,14 +108,28 @@ export const VerdictResult = ({ idea, result }: { idea: string; result: QuickVer
         </div>
       </Card>
 
+      {result.case_for && (
+        <Card className="border-verdict-proceed/40">
+          <CardTitle icon={Sparkles}>What's working</CardTitle>
+          <p className="text-sm text-foreground">{result.case_for}</p>
+        </Card>
+      )}
+
+      {result.what_would_change_my_mind && (
+        <Card className="border-cta/40">
+          <CardTitle icon={TrendingUp}>How to make it stronger</CardTitle>
+          <p className="text-sm text-foreground">{result.what_would_change_my_mind}</p>
+        </Card>
+      )}
+
       <Card className="border-advisor-risk/40">
-        <CardTitle icon={HelpCircle}>The question you must answer before you build</CardTitle>
+        <CardTitle icon={HelpCircle}>The question to answer before you build</CardTitle>
         <p className="text-lg font-medium text-foreground">{result.killer_question}</p>
         <p className="mt-2 text-xs text-muted-foreground">From the Risk Analyst</p>
       </Card>
 
       <Card>
-        <CardTitle icon={ShieldAlert}>Top risks</CardTitle>
+        <CardTitle icon={ShieldAlert}>Risks to plan for</CardTitle>
         <ol className="space-y-3">
           {result.top_risks.map((risk, i) => (
             <li key={i} className="flex gap-3 text-sm text-foreground">
@@ -181,12 +195,6 @@ export const VerdictResult = ({ idea, result }: { idea: string; result: QuickVer
         </Card>
       )}
 
-      {result.what_would_change_my_mind && (
-        <Card>
-          <CardTitle icon={Info}>What would change the board's mind</CardTitle>
-          <p className="text-sm text-foreground">{result.what_would_change_my_mind}</p>
-        </Card>
-      )}
     </div>
   );
 };
